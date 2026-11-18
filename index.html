@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Dollhouse Vintage – Checkout (A)</title>
+<meta name="apple-mobile-web-app-title" content="Dollhouse A">
+<meta name="theme-color" content="#f6f4f0">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<style>
+  :root{
+    --bg:#f6f4f0; --paper:#ffffff; --ink:#1f1d1a; --muted:#8a8378; --line:#e6e1d8;
+    --accent:#1f1d1a; --sel:#1f1d1a; --sel-ink:#ffffff; --radius:16px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
+    touch-action:manipulation;overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
+  input,textarea{-webkit-user-select:text;user-select:text;font:inherit}
+  button{font:inherit;cursor:pointer;color:inherit}
+  .view{display:none;min-height:100%;padding:32px 24px 40px}
+  .view.active{display:flex;flex-direction:column;align-items:center}
+  .wrap{width:100%;max-width:640px}
+  .store{font-family:Georgia,"Times New Roman",serif;font-size:28px;letter-spacing:.08em;text-transform:uppercase;text-align:center;margin:0 0 28px}
+
+  /* ---------- Screen 1: merchant ---------- */
+  .label{font-size:14px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+  .amtbox{display:flex;align-items:baseline;justify-content:flex-end;gap:4px;background:var(--paper);border:2px solid var(--line);border-radius:var(--radius);padding:14px 22px;font-size:40px;font-weight:700;font-variant-numeric:tabular-nums;min-height:84px}
+  .amtbox.on{border-color:var(--sel)}
+  .amtbox .cur{color:var(--muted);font-weight:400}
+  .amtbox .ph{color:#cfc8bc}
+  .keys{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:64px;gap:10px;margin-top:12px}
+  .key{background:var(--paper);border:2px solid var(--line);border-radius:var(--radius);font-size:28px;font-weight:600;font-variant-numeric:tabular-nums;padding:0;touch-action:manipulation}
+  .key:active{background:var(--line)}
+  .key.fn{font-size:18px;color:var(--muted);letter-spacing:.04em}
+  .key.bs{grid-column:4;grid-row:1 / span 2;font-size:30px}
+  .key.clr{grid-column:4;grid-row:3 / span 2}
+  .key.zero{grid-column:1 / span 2}
+  .conds{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .cond{background:var(--paper);border:2px solid var(--line);border-radius:var(--radius);padding:30px 10px;font-size:20px;font-weight:700;letter-spacing:.1em;white-space:nowrap}
+  .cond.on{background:var(--sel);border-color:var(--sel);color:var(--sel-ink)}
+  .section{margin-bottom:30px}
+  .go{width:100%;border:0;border-radius:var(--radius);background:var(--accent);color:#fff;font-size:22px;font-weight:600;padding:22px}
+  .go:disabled{opacity:.25}
+
+  /* ---------- Screen 2: customer ---------- */
+  .receipt{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:30px 28px;width:100%;max-width:640px}
+  .receipt .store{margin-bottom:22px}
+  .line{display:flex;justify-content:space-between;font-size:17px;padding:7px 0;font-variant-numeric:tabular-nums}
+  .line .k{color:var(--muted)}
+  .line.amt{font-size:22px;font-weight:700;border-top:1px solid var(--line);margin-top:6px;padding-top:14px}
+  .instr{font-size:20px;font-weight:700;line-height:1.35;margin:24px 0 12px}
+  .pads{display:flex;flex-direction:column;gap:14px}
+  .padblock{display:flex;flex-direction:column;min-height:0;transition:opacity .25s ease}
+  .padblock.hidden{display:none}
+  .padhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+  .padlabel{font-size:14px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .pad{position:relative;height:200px;border:1.5px solid #d6d0c5;border-radius:12px;background:#fff;overflow:hidden;transition:border-color .25s ease,box-shadow .25s ease}
+  .pad canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block}
+  .row{display:flex;gap:12px;margin-top:14px}
+  .clear{flex:0 0 auto;background:transparent;border:2px solid var(--line);border-radius:var(--radius);padding:10px 22px;min-height:48px;font-size:17px;font-weight:600}
+  .complete{flex:1;border:0;border-radius:var(--radius);background:var(--accent);color:#fff;font-size:21px;font-weight:600;padding:18px}
+  .complete:disabled{background:#c6c6c6;opacity:1}
+  /* Version B states */
+  .padblock.inactive{opacity:.4;pointer-events:none}
+  .padblock.inactive .pad{background:#faf9f6}
+  .padblock.current .pad{border-color:var(--ink);box-shadow:0 0 0 4px rgba(31,29,26,.07)}
+  .padblock.locked canvas{pointer-events:none}
+  .padblock.locked .clear,.padblock.inactive .clear{visibility:hidden}
+
+  /* ---------- Screen 3: done ---------- */
+  #done{justify-content:center}
+  #done .receipt{text-align:center;padding:60px 28px}
+  #done h2{font-size:34px;margin:0 0 10px}
+  #done p{font-size:19px;color:var(--muted);margin:0 0 36px}
+
+  /* ---------- Hidden staff tools ---------- */
+  #corner{position:fixed;left:0;top:0;width:80px;height:80px;z-index:20;display:none}
+  #corner.on{display:block}
+  .modal{position:fixed;inset:0;background:rgba(20,18,15,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+  .modal.on{display:flex}
+  .modal .box{background:#fff;border-radius:var(--radius);padding:24px;width:100%;max-width:460px}
+  .modal h3{margin:0 0 8px;font-size:19px}
+  .modal p{margin:0 0 14px;color:var(--muted);font-size:14px;line-height:1.45}
+  .mbtns{display:flex;flex-wrap:wrap;gap:10px}
+  .mbtn{border:2px solid var(--line);background:#fff;border-radius:12px;padding:11px 16px;font-size:15px;font-weight:600}
+  .mbtn.dark{background:var(--ink);border-color:var(--ink);color:#fff}
+  .mbtn.red{border-color:#b33;color:#b33}
+  textarea.csv{display:none;width:100%;height:130px;margin-top:12px;font-family:ui-monospace,Menlo,monospace;font-size:11px;border:1.5px solid var(--line);border-radius:10px;padding:8px}
+  .mnote{font-size:13px;color:#2f6b4f;min-height:18px;margin-top:10px}
+
+  @media (max-width:560px){
+    .cond{font-size:16px;letter-spacing:.06em}
+    .pad{height:170px}
+  }
+
+  /* ---------- Tablet sizing (11-inch iPad in Safari: ~820x1100 portrait, ~1180x740 landscape) ---------- */
+  html.lock, html.lock body{overflow:hidden;height:100%;position:fixed;width:100%}
+  @media (min-width:700px){
+    .view{padding:clamp(24px,4vh,48px) 40px}
+    .wrap{max-width:760px}
+    .store{font-size:34px;margin-bottom:clamp(20px,4vh,40px)}
+    .label{font-size:15px;margin-bottom:12px}
+    .amtbox{font-size:50px;min-height:96px;padding:14px 26px}
+    .keys{grid-auto-rows:clamp(62px,7.5vh,82px);gap:12px;margin-top:14px}
+    .key{font-size:34px}
+    .key.fn{font-size:21px}
+    .key.bs{font-size:36px}
+    .section{margin-bottom:clamp(22px,4vh,40px)}
+    .conds{gap:16px}
+    .cond{font-size:28px;padding:clamp(26px,4vh,42px) 10px}
+    .go{font-size:26px;padding:26px}
+
+    /* customer screen fills the visible browser area; the drawing area(s) take the remaining height */
+    #customer{height:100vh;height:100dvh;padding-top:clamp(16px,2.5vh,32px);padding-bottom:clamp(16px,2.5vh,32px)}
+    #customer .receipt{max-width:780px;flex:1;min-height:0;display:flex;flex-direction:column;padding:clamp(22px,3vh,36px) 40px}
+    #customer .store{margin-bottom:clamp(12px,2vh,24px)}
+    .line{font-size:20px;padding:8px 0}
+    .line.amt{font-size:26px;padding-top:16px}
+    .instr{font-size:26px;margin:clamp(16px,2.6vh,28px) 0 clamp(12px,2vh,20px)}
+    .pads{flex:1;min-height:0;gap:clamp(12px,2vh,20px)}
+    .padblock{flex:1}
+    .padlabel{font-size:15px}
+    .pad{flex:1;min-height:130px;height:auto}
+    .clear{font-size:19px;padding:10px 26px;min-height:52px}
+    .row{gap:16px;margin-top:clamp(12px,2vh,18px)}
+    .complete{font-size:24px;padding:22px}
+
+    #done .receipt{max-width:640px;padding:72px 48px}
+    #done h2{font-size:44px}
+    #done p{font-size:23px;margin-bottom:44px}
+  }
+  /* landscape: receipt details beside each other, drawing areas side by side, merchant in two columns */
+  @media (min-width:1000px) and (orientation:landscape){
+    #customer .receipt{max-width:960px}
+    .meta-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px}
+    .meta-grid .line{flex-direction:column;align-items:flex-start;border:0;margin:0;padding:0;gap:4px}
+    .meta-grid .line.amt{font-size:20px}
+    .meta-grid .line.amt span:first-child{font-weight:400;color:var(--muted)}
+    .meta-grid .line.amt span:last-child{font-size:26px}
+    .pads{flex-direction:row}
+    .padblock{flex:1 1 0;min-width:0}
+
+    #merchant .wrap{max-width:1040px}
+    .mgrid{display:grid;grid-template-columns:1.15fr 1fr;gap:40px;align-items:start}
+    .mgrid .conds{grid-template-columns:1fr}
+    .keys{grid-auto-rows:clamp(56px,8.5vh,76px)}
+  }
+  /* ---------- storage warning (only shown if this device cannot save) ---------- */
+  .warn{margin:-14px 0 22px;padding:12px 16px;border-radius:12px;background:#fbeaea;color:#8a1f1f;font-size:15px;line-height:1.4;text-align:center}
+  .warn[hidden]{display:none}
+  /* ---------- staff panel ---------- */
+  .stats{font-size:14px;line-height:1.55;margin:0 0 16px;font-variant-numeric:tabular-nums}
+  .stats div{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #f0ece5;padding:3px 0}
+  .stats span:first-child{color:var(--muted)}
+  .stats .bad{color:#b33;font-weight:600}
+  .stats .good{color:#2f6b4f;font-weight:600}
+  .danger{margin-top:18px;font-size:13px;color:var(--muted)}
+  .danger summary{cursor:pointer}
+  .danger input{border:1.5px solid var(--line);border-radius:10px;padding:9px 10px;font-size:15px;width:140px;margin-right:8px}
+  /* ---------- save failure (only shown if a checkout could not be saved) ---------- */
+  #failModal .box{text-align:center;padding:36px 28px}
+  #failModal h3{font-size:26px;margin:0 0 10px}
+  #failModal p{font-size:16px;margin:0 0 22px}
+  #failModal .mbtns{justify-content:center}
+</style>
+</head>
+<body>
+
+<!-- ============ SCREEN 1: MERCHANT ============ -->
+<section id="merchant" class="view active">
+  <div class="wrap">
+    <div class="store" id="storeTitle">Dollhouse Vintage</div>
+    <p class="warn" id="storeWarn" hidden></p>
+
+    <div class="mgrid">
+      <div class="section">
+        <p class="label">Amount</p>
+        <div class="amtbox" id="amtBox" aria-live="polite"></div>
+        <div class="keys" id="keys">
+          <button class="key" data-k="1">1</button>
+          <button class="key" data-k="2">2</button>
+          <button class="key" data-k="3">3</button>
+          <button class="key fn bs" data-k="back" aria-label="Backspace">&#9003;</button>
+          <button class="key" data-k="4">4</button>
+          <button class="key" data-k="5">5</button>
+          <button class="key" data-k="6">6</button>
+          <button class="key" data-k="7">7</button>
+          <button class="key" data-k="8">8</button>
+          <button class="key" data-k="9">9</button>
+          <button class="key fn clr" data-k="clear">CLEAR</button>
+          <button class="key zero" data-k="0">0</button>
+          <button class="key" data-k=".">.</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="section">
+          <p class="label">Acknowledgment</p>
+          <div class="conds">
+            <button class="cond" data-cond="sign">SIGN</button>
+            <button class="cond" data-cond="sign_doodle">SIGN + DOODLE</button>
+          </div>
+        </div>
+        <button class="go" id="goBtn" disabled>Continue</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SCREEN 2: CUSTOMER ============ -->
+<section id="customer" class="view">
+  <div class="receipt">
+    <div class="store">Dollhouse Vintage</div>
+    <div class="meta-grid">
+      <div class="line"><span class="k">Date</span><span id="rDate"></span></div>
+      <div class="line"><span class="k">Receipt no.</span><span id="rNo"></span></div>
+      <div class="line amt"><span>Amount paid</span><span id="rAmt"></span></div>
+    </div>
+    <p class="instr" id="instr"></p>
+    <div class="pads">
+      <div class="padblock" id="sigBlock">
+        <div class="padhead"><span class="padlabel">Signature</span><button class="clear" id="sigClear">Clear</button></div>
+        <div class="pad" id="sigWrap"><canvas id="sigPad" aria-label="Signature area"></canvas></div>
+      </div>
+      <div class="padblock" id="dooBlock">
+        <div class="padhead"><span class="padlabel">Doodle</span><button class="clear" id="dooClear">Clear</button></div>
+        <div class="pad" id="dooWrap"><canvas id="dooPad" aria-label="Doodle area"></canvas></div>
+      </div>
+    </div>
+    <div class="row">
+      <button class="complete" id="primaryBtn" disabled>Complete</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SCREEN 3: DONE ============ -->
+<section id="done" class="view">
+  <div class="receipt">
+    <h2>Thank you!</h2>
+    <p>Please hand the tablet back to the seller.</p>
+    <button class="go" id="nextBtn">Next Customer</button>
+  </div>
+</section>
+
+<!-- Hidden: press-and-hold top-left corner on the customer screen to cancel back to Screen 1 (nothing is saved) -->
+<div id="corner" aria-hidden="true"></div>
+
+<!-- Shown only if a checkout could not be saved after automatic retries -->
+<div class="modal" id="failModal" role="dialog" aria-modal="true">
+  <div class="box">
+    <h3>Please hand the tablet back to the seller.</h3>
+    <p>This checkout could not be saved.</p>
+    <div class="mbtns">
+      <button class="mbtn dark" id="retryBtn">Try again</button>
+      <button class="mbtn" id="skipBtn">Continue without saving</button>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden: press-and-hold the store name on Screen 1 for ~2 s: status, export, backup -->
+<div class="modal" id="dataModal" role="dialog" aria-modal="true">
+  <div class="box">
+    <h3>Saved transactions</h3>
+    <div class="stats" id="stats"></div>
+    <div class="mbtns">
+      <button class="mbtn dark" id="exportBtn">Export ZIP</button>
+      <button class="mbtn" id="backupBtn">Back up now</button>
+      <button class="mbtn" id="closeBtn">Close</button>
+    </div>
+    <div class="mbtns" id="saveRow" style="display:none;margin-top:10px">
+      <button class="mbtn dark" id="shareZipBtn">Save / share ZIP</button>
+      <button class="mbtn" id="dlZipBtn">Download ZIP</button>
+    </div>
+    <div class="mnote" id="mnote"></div>
+    <details class="danger" id="dangerBox">
+      <summary>Delete all transactions…</summary>
+      <p style="margin:10px 0">Only for removing test data before the study starts. Type DELETE to confirm.</p>
+      <input id="delInput" autocomplete="off" autocapitalize="characters"><button class="mbtn red" id="delBtn">Delete all</button>
+    </details>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script>
+(function(){
+"use strict";
+/* VERSION "A": signature + doodle areas both active at once.
+   VERSION "B": sign first, tap Next, then the doodle area activates. */
+var VERSION = "A", APP_VERSION = "4.0.0-" + VERSION;
+var CFG = window.DV_CONFIG || {};
+var INSTR = {
+  sign:        "To complete your checkout, please sign your name in the space below.",
+  sign_doodle: "To complete your checkout, please sign your name and add a little doodle in the spaces below."
+};
+var COND_LABEL = { sign:"SIGN", sign_doodle:"SIGN + DOODLE" };
+
+function $(id){ return document.getElementById(id); }
+function pad2(n){ return String(n).padStart(2,"0"); }
+function sleep(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+function show(id){
+  ["merchant","customer","done"].forEach(function(v){ $(v).classList.toggle("active", v===id); });
+  $("corner").classList.toggle("on", id==="customer");
+  document.documentElement.classList.toggle("lock", id!=="merchant");  /* no page scrolling/bounce while the customer draws */
+  window.scrollTo(0,0);
+}
+
+/* =====================================================================
+   LOCAL STORAGE (IndexedDB)
+   store "tx"   : one record per completed checkout, written once, never modified
+   store "sync" : which receipts have been copied to the Google Drive backup
+   store "meta" : device id + receipt counter (mirrored in localStorage)
+   ===================================================================== */
+var DB = null, dbError = null;
+function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k, v); }catch(e){} }
+
+function openDB(){
+  return new Promise(function(resolve, reject){
+    var done = false, req;
+    var t = setTimeout(function(){ if(!done){ done = true; reject(new Error("IndexedDB open timed out")); } }, 4000);
+    try{ req = indexedDB.open("dollhouse_checkout", 1); }catch(e){ clearTimeout(t); reject(e); return; }
+    req.onupgradeneeded = function(){
+      var d = req.result;
+      if(!d.objectStoreNames.contains("tx"))   d.createObjectStore("tx",   { keyPath:"receipt_no" });
+      if(!d.objectStoreNames.contains("sync")) d.createObjectStore("sync", { keyPath:"receipt_no" });
+      if(!d.objectStoreNames.contains("meta")) d.createObjectStore("meta");
+    };
+    req.onsuccess = function(){ if(done){ return; } done = true; clearTimeout(t); resolve(req.result); };
+    req.onerror   = function(){ if(done){ return; } done = true; clearTimeout(t); reject(req.error); };
+  });
+}
+function idb(store, mode, fn){
+  /* runs fn(objectStore) in one transaction; resolves with fn's request result once the transaction has COMMITTED */
+  return new Promise(function(resolve, reject){
+    var tx = DB.transaction(store, mode), result;
+    var r = fn(tx.objectStore(store));
+    if(r) r.onsuccess = function(){ result = r.result; };
+    tx.oncomplete = function(){ resolve(result); };
+    tx.onerror = function(){ reject(tx.error || (r && r.error)); };
+    tx.onabort = function(){ reject(tx.error || new Error("transaction aborted")); };
+  });
+}
+function dbAll(store){ return idb(store, "readonly", function(s){ return s.getAll(); }); }
+function dbGet(store, key){ return idb(store, "readonly", function(s){ return s.get(key); }); }
+function metaGet(k){ return idb("meta", "readonly", function(s){ return s.get(k); }); }
+function metaSet(k,v){ return idb("meta", "readwrite", function(s){ return s.put(v, k); }); }
+
+/* device id (3 characters) + receipt counter: kept in both localStorage and IndexedDB, the higher counter wins */
+var deviceTag = null, counter = 0;
+function newDeviceTag(){ var a = new Uint32Array(1); crypto.getRandomValues(a); return (a[0] % 46656).toString(36).toUpperCase().padStart(3,"0"); }
+async function initIds(){
+  var lsDev = lsGet("dv_device3"), lsCnt = parseInt(lsGet("dv_counter3") || "0", 10) || 0;
+  var dbDev = null, dbCnt = 0;
+  if(DB){ try{ dbDev = await metaGet("device"); dbCnt = (await metaGet("counter")) || 0; }catch(e){} }
+  deviceTag = dbDev || lsDev || newDeviceTag();
+  counter = Math.max(lsCnt, dbCnt);
+  lsSet("dv_device3", deviceTag); lsSet("dv_counter3", String(counter));
+  if(DB){ try{ await metaSet("device", deviceTag); await metaSet("counter", counter); }catch(e){} }
+}
+function nextReceiptNo(d){
+  counter += 1; lsSet("dv_counter3", String(counter));
+  if(DB) metaSet("counter", counter).catch(function(){});
+  return "DV-" + String(d.getFullYear()).slice(2) + pad2(d.getMonth()+1) + pad2(d.getDate()) + "-" + deviceTag + String(counter).padStart(4,"0");
+}
+
+/* ---------- Screen 1: keypad amount + condition ---------- */
+var entry = "", selCond = null, ready = false;
+var condBtns = Array.prototype.slice.call(document.querySelectorAll(".cond"));
+
+function amount(){
+  if(!entry) return null;
+  var n = Math.round(parseFloat(entry)*100)/100;
+  return (n>0 && n<10000) ? n : null;
+}
+function press(k){
+  if(k==="clear"){ entry=""; }
+  else if(k==="back"){ entry = entry.slice(0,-1); }
+  else if(k==="."){ if(entry.indexOf(".")<0) entry = entry ? entry+"." : "0."; }
+  else if(/^[0-9]$/.test(k)){
+    var dot = entry.indexOf(".");
+    if(dot>=0){ if(entry.length-dot-1 < 2) entry += k; }   /* max two decimals */
+    else if(entry==="0"){ entry = k; }                      /* no leading zeros */
+    else if(entry.length < 4){ entry += k; }                /* up to $9999.99 */
+  }
+  renderMerchant();
+}
+function renderMerchant(){
+  var box = $("amtBox");
+  box.innerHTML = '<span class="cur">$</span>' + (entry ? '<span>'+entry+'</span>' : '<span class="ph">0.00</span>');
+  box.classList.toggle("on", amount()!=null);
+  condBtns.forEach(function(b){ b.classList.toggle("on", b.dataset.cond===selCond); });
+  $("goBtn").disabled = !(ready && amount()!=null && selCond);
+}
+Array.prototype.forEach.call(document.querySelectorAll(".key"), function(b){
+  b.addEventListener("click", function(){ press(b.dataset.k); });
+});
+condBtns.forEach(function(b){ b.addEventListener("click", function(){ selCond = b.dataset.cond; renderMerchant(); }); });
+$("goBtn").addEventListener("click", startCustomer);
+/* hardware keyboard (handy when testing on a laptop) */
+window.addEventListener("keydown", function(e){
+  if(!$("merchant").classList.contains("active") || $("dataModal").classList.contains("on")) return;
+  if(/^[0-9.]$/.test(e.key)) press(e.key);
+  else if(e.key==="Backspace"){ e.preventDefault(); press("back"); }
+  else if(e.key==="Escape" || e.key==="Delete") press("clear");
+  else if(e.key==="Enter" && !$("goBtn").disabled) startCustomer();
+});
+
+/* ---------- drawing pads ---------- */
+function strokePath(c, pts){
+  c.lineCap="round"; c.lineJoin="round"; c.strokeStyle="#1f1d1a"; c.fillStyle="#1f1d1a"; c.lineWidth=3.2;
+  if(pts.length===1){ c.beginPath(); c.arc(pts[0][0],pts[0][1],1.6,0,Math.PI*2); c.fill(); return; }
+  c.beginPath(); c.moveTo(pts[0][0],pts[0][1]);
+  for(var i=1;i<pts.length-1;i++){ var mx=(pts[i][0]+pts[i+1][0])/2, my=(pts[i][1]+pts[i+1][1])/2; c.quadraticCurveTo(pts[i][0],pts[i][1],mx,my); }
+  var l=pts[pts.length-1]; c.lineTo(l[0],l[1]); c.stroke();
+}
+function makePad(key, wrapId, canvasId){
+  var p = { key:key, wrap:$(wrapId), canvas:$(canvasId), strokes:[], active:null, activeId:null, W:0, H:0, enabled:true };
+  p.ctx = p.canvas.getContext("2d");
+  p.hasInk = function(){ return p.strokes.length>0; };
+  p.size = function(){
+    var r = p.wrap.getBoundingClientRect(), dpr = Math.max(1, window.devicePixelRatio||1);
+    if(!r.width || !r.height) return;
+    if(p.W && p.H && p.strokes.length && (r.width!==p.W || r.height!==p.H)){
+      var sx=r.width/p.W, sy=r.height/p.H;
+      p.strokes = p.strokes.map(function(s){ return s.map(function(q){ return [q[0]*sx,q[1]*sy]; }); });
+    }
+    p.W=r.width; p.H=r.height;
+    p.canvas.width=Math.round(p.W*dpr); p.canvas.height=Math.round(p.H*dpr);
+    p.ctx.setTransform(dpr,0,0,dpr,0,0); p.redraw();
+  };
+  p.redraw = function(){ p.ctx.clearRect(0,0,p.W,p.H); p.strokes.forEach(function(s){ strokePath(p.ctx, s); }); if(p.active) strokePath(p.ctx, p.active); };
+  p.reset = function(){ p.strokes=[]; p.active=null; p.activeId=null; p.W=0; p.H=0; p.size(); };
+  function pt(e){ var r=p.canvas.getBoundingClientRect(); return [e.clientX-r.left, e.clientY-r.top]; }
+
+  p.canvas.addEventListener("pointerdown", function(e){
+    e.preventDefault();
+    if(!cur || saving || !p.enabled || p.activeId!==null) return;
+    p.activeId=e.pointerId;
+    try{ p.canvas.setPointerCapture(e.pointerId); }catch(_){}
+    p.active=[pt(e)]; p.redraw();
+  });
+  p.canvas.addEventListener("pointermove", function(e){
+    if(e.pointerId!==p.activeId || !p.active) return;
+    e.preventDefault();
+    var evs = (e.getCoalescedEvents && e.getCoalescedEvents()) || []; if(!evs.length) evs=[e];
+    evs.forEach(function(ev){ var q=pt(ev), l=p.active[p.active.length-1]; if(Math.hypot(q[0]-l[0],q[1]-l[1])<0.8) return; p.active.push(q); });
+    p.redraw();
+  });
+  function endStroke(e){
+    if(e.pointerId!==p.activeId) return;
+    if(p.active && p.active.length && cur) p.strokes.push(p.active);
+    p.active=null; p.activeId=null; p.redraw();
+    updateCustomer();
+  }
+  p.canvas.addEventListener("pointerup", endStroke);
+  p.canvas.addEventListener("pointercancel", endStroke);
+  /* stop iOS from scrolling/zooming when a touch starts on the canvas */
+  p.canvas.addEventListener("touchstart", function(e){ e.preventDefault(); }, {passive:false});
+  p.canvas.addEventListener("touchmove", function(e){ e.preventDefault(); }, {passive:false});
+  return p;
+}
+var sig = makePad("sig", "sigWrap", "sigPad");
+var doo = makePad("doodle", "dooWrap", "dooPad");
+
+/* drawing -> PNG bytes: white background, 2x the on-screen size */
+function padToPNG(p){
+  return new Promise(function(resolve, reject){
+    var s = 2, w = Math.max(1, Math.round(p.W)), h = Math.max(1, Math.round(p.H));
+    var c = document.createElement("canvas"); c.width = w*s; c.height = h*s;
+    var x = c.getContext("2d");
+    x.fillStyle = "#ffffff"; x.fillRect(0,0,c.width,c.height); x.scale(s,s);
+    p.strokes.forEach(function(st){ strokePath(x, st); });
+    c.toBlob(function(b){
+      if(!b){ reject(new Error("PNG encoding failed")); return; }
+      b.arrayBuffer().then(resolve, reject);
+    }, "image/png");
+  });
+}
+function decodePNG(buf){
+  var blob = new Blob([buf], {type:"image/png"});
+  if(window.createImageBitmap) return createImageBitmap(blob).then(function(bm){ var ok = bm.width>0 && bm.height>0; if(bm.close) bm.close(); if(!ok) throw new Error("empty image"); });
+  return new Promise(function(resolve, reject){
+    var u = URL.createObjectURL(blob), img = new Image();
+    img.onload = function(){ URL.revokeObjectURL(u); img.naturalWidth>0 ? resolve() : reject(new Error("empty image")); };
+    img.onerror = function(){ URL.revokeObjectURL(u); reject(new Error("image does not decode")); };
+    img.src = u;
+  });
+}
+
+/* ---------- Screen 2 ---------- */
+var cur = null, stage = null, saving = false;   /* stage (B only): "sign" -> "doodle" | "confirm" */
+function startCustomer(){
+  var amt = amount(); if(!ready || amt==null || !selCond) return;
+  var now = new Date();
+  cur = { receipt_no: nextReceiptNo(now), condition: selCond, amount: amt.toFixed(2), start: now };
+  $("rDate").textContent = now.toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"});
+  $("rNo").textContent = cur.receipt_no;
+  $("rAmt").textContent = "$" + cur.amount;
+  $("instr").textContent = INSTR[selCond];
+  $("dooBlock").classList.toggle("hidden", selCond!=="sign_doodle");
+  stage = "sign"; saving = false;
+  show("customer");
+  sig.reset(); doo.reset();
+  updateCustomer();
+}
+function needDoodle(){ return cur && cur.condition==="sign_doodle"; }
+function updateCustomer(){
+  if(!cur) return;
+  var btn = $("primaryBtn"), sb=$("sigBlock"), db=$("dooBlock");
+  if(VERSION==="A"){
+    sig.enabled = true; doo.enabled = true;
+    btn.textContent = "Complete";
+    btn.disabled = saving || !(sig.hasInk() && (!needDoodle() || doo.hasInk()));
+    return;
+  }
+  /* Version B: one area at a time, same screen */
+  var signing = stage==="sign";
+  sig.enabled = signing; doo.enabled = stage==="doodle";
+  sb.classList.toggle("current", signing);
+  sb.classList.toggle("locked", !signing);
+  db.classList.toggle("inactive", signing);
+  db.classList.toggle("current", stage==="doodle");
+  if(signing){ btn.textContent = "Next"; btn.disabled = !sig.hasInk(); }
+  else if(stage==="doodle"){ btn.textContent = "Complete"; btn.disabled = saving || !doo.hasInk(); }
+  else { btn.textContent = "Complete"; btn.disabled = saving; }
+}
+$("primaryBtn").addEventListener("click", function(){
+  if(!cur || saving || this.disabled) return;
+  if(VERSION==="B" && stage==="sign"){
+    if(!sig.hasInk()) return;
+    stage = needDoodle() ? "doodle" : "confirm";
+    updateCustomer();
+    return;
+  }
+  completeCheckout();
+});
+function clearPad(p){ if(saving) return; p.strokes=[]; p.active=null; p.activeId=null; p.redraw(); updateCustomer(); }
+$("sigClear").addEventListener("click", function(){ if(sig.enabled) clearPad(sig); });
+$("dooClear").addEventListener("click", function(){ if(doo.enabled) clearPad(doo); });
+
+/* ---------- saving a checkout: write once, read back, verify, only then show "Thank you!" ---------- */
+var pendingRec = null;
+function tzLabel(d){ var o = -d.getTimezoneOffset(), s = o>=0 ? "+" : "-"; o = Math.abs(o); return "UTC" + s + pad2(Math.floor(o/60)) + ":" + pad2(o%60); }
+async function buildRecord(){
+  var end = new Date();
+  var rec = {
+    receipt_no: cur.receipt_no, version: VERSION, device: deviceTag,
+    date: end.getFullYear()+"-"+pad2(end.getMonth()+1)+"-"+pad2(end.getDate()),
+    time: pad2(end.getHours())+":"+pad2(end.getMinutes())+":"+pad2(end.getSeconds()),
+    timezone: tzLabel(end),
+    amount: cur.amount,
+    condition: COND_LABEL[cur.condition],
+    duration_s: Math.round((end - cur.start)/100)/10,
+    completed_at_iso: end.toISOString(),
+    app_version: APP_VERSION,
+    signature_png: await padToPNG(sig),
+    doodle_png: needDoodle() ? await padToPNG(doo) : null
+  };
+  return rec;
+}
+async function verifyStored(rec){
+  var s = await dbGet("tx", rec.receipt_no);
+  if(!s) throw new Error("record not found after saving");
+  if(s.completed_at_iso!==rec.completed_at_iso || s.amount!==rec.amount || s.condition!==rec.condition) throw new Error("stored record does not match");
+  if(!s.signature_png || s.signature_png.byteLength!==rec.signature_png.byteLength || s.signature_png.byteLength<100) throw new Error("signature image missing");
+  await decodePNG(s.signature_png);
+  if(rec.doodle_png){
+    if(!s.doodle_png || s.doodle_png.byteLength!==rec.doodle_png.byteLength || s.doodle_png.byteLength<100) throw new Error("doodle image missing");
+    await decodePNG(s.doodle_png);
+  }
+}
+async function saveAndVerify(rec){
+  var lastErr = null;
+  for(var attempt=1; attempt<=3; attempt++){
+    try{
+      if(!DB) DB = await openDB();
+      try{
+        await idb("tx", "readwrite", function(s){ return s.add(rec); });   /* add() never overwrites an existing record */
+      }catch(e){
+        if(!(e && e.name==="ConstraintError")) throw e;
+        var existing = await dbGet("tx", rec.receipt_no);
+        if(!existing || existing.completed_at_iso!==rec.completed_at_iso){
+          rec.receipt_no += "-" + attempt;          /* extremely unlikely clash with an older receipt: keep both */
+          continue;
+        }
+        /* same record already written by an earlier attempt: just verify it */
+      }
+      await verifyStored(rec);
+      return true;
+    }catch(e){ lastErr = e; await sleep(400*attempt); }
+  }
+  throw lastErr || new Error("save failed");
+}
+async function completeCheckout(){
+  saving = true; updateCustomer();
+  try{
+    if(!pendingRec) pendingRec = await buildRecord();
+    await saveAndVerify(pendingRec);
+    lastSaved = pendingRec.receipt_no;
+    pendingRec = null; saving = false; cur = null;
+    show("done");
+    setTimeout(runBackup, 800);
+  }catch(e){
+    lastSaveError = (e && e.message) || String(e);
+    $("failModal").classList.add("on");
+  }
+}
+$("retryBtn").addEventListener("click", function(){ $("failModal").classList.remove("on"); completeCheckout(); });
+$("skipBtn").addEventListener("click", function(){
+  $("failModal").classList.remove("on");
+  unsavedCount++; pendingRec = null; saving = false; cur = null; show("done");
+});
+
+/* ---------- Screen 3 ---------- */
+function resetAll(){
+  entry = ""; selCond = null; cur = null; stage = null; saving = false; pendingRec = null;
+  sig.strokes=[]; doo.strokes=[]; sig.active=doo.active=null; sig.activeId=doo.activeId=null;
+  ["sigBlock","dooBlock"].forEach(function(id){ $(id).classList.remove("current","locked","inactive"); });
+  renderMerchant(); show("merchant");
+}
+$("nextBtn").addEventListener("click", resetAll);
+
+/* hidden cancel: hold top-left corner ~2 s on the customer screen (nothing is saved) */
+var holdT=null;
+$("corner").addEventListener("pointerdown", function(e){ e.preventDefault(); holdT=setTimeout(function(){ if(!saving) resetAll(); }, 1800); });
+["pointerup","pointerleave","pointercancel"].forEach(function(ev){ $("corner").addEventListener(ev, function(){ clearTimeout(holdT); }); });
+
+var rt=null; window.addEventListener("resize", function(){ clearTimeout(rt); rt=setTimeout(function(){ if($("customer").classList.contains("active")){ sig.size(); doo.size(); } },120); });
+
+/* =====================================================================
+   GOOGLE DRIVE BACKUP (only if config.js has a backupUrl)
+   Runs whenever the tablet is online with the app open. Each saved checkout is
+   uploaded once; the server ignores repeats, so retries never create duplicates.
+   ===================================================================== */
+var backupBusy = false, lastBackup = { at:null, msg:"" }, lastSaved = null, lastSaveError = "", unsavedCount = 0;
+function backupOn(){ return !!(CFG.backupUrl && /^(https:\/\/|http:\/\/localhost[:/])/.test(CFG.backupUrl)); }
+function b64(buf){
+  if(!buf) return "";
+  var u = new Uint8Array(buf), s = "", CH = 0x8000;
+  for(var i=0;i<u.length;i+=CH) s += String.fromCharCode.apply(null, u.subarray(i, i+CH));
+  return btoa(s);
+}
+async function uploadOne(r){
+  var body = JSON.stringify({
+    token: CFG.backupToken || "", receipt_no: r.receipt_no, version: r.version, device: r.device,
+    date: r.date, time: r.time, timezone: r.timezone, amount: r.amount, condition: r.condition,
+    duration_s: r.duration_s, signature_png_b64: b64(r.signature_png), doodle_png_b64: b64(r.doodle_png)
+  });
+  var ctl = window.AbortController ? new AbortController() : null, t = setTimeout(function(){ if(ctl) ctl.abort(); }, 45000);
+  try{
+    var res = await fetch(CFG.backupUrl, { method:"POST", headers:{ "Content-Type":"text/plain;charset=utf-8" }, body: body, redirect:"follow", signal: ctl ? ctl.signal : undefined });
+    var j = await res.json();
+    if(!j || !j.ok) throw new Error((j && j.error) || ("HTTP " + res.status));
+  } finally { clearTimeout(t); }
+}
+async function runBackup(){
+  if(!backupOn() || !DB || backupBusy) return;
+  if(navigator.onLine===false){ lastBackup = { at:new Date(), msg:"offline – will retry" }; return; }
+  backupBusy = true;
+  var n = 0;
+  try{
+    var all = await dbAll("tx"), synced = await dbAll("sync"), done = {};
+    synced.forEach(function(s){ done[s.receipt_no] = true; });
+    var todo = all.filter(function(r){ return !done[r.receipt_no]; });
+    for(var i=0;i<todo.length;i++){
+      if(saving) break;                                      /* never compete with a checkout being saved */
+      await uploadOne(todo[i]);
+      await idb("sync", "readwrite", function(s){ return s.put({ receipt_no: todo[i].receipt_no, at: new Date().toISOString() }); });
+      n++;
+    }
+    lastBackup = { at:new Date(), msg: todo.length ? ("uploaded " + n) : "up to date" };
+  }catch(e){
+    lastBackup = { at:new Date(), msg: "failed after " + n + " – will retry (" + ((e && e.message) || e) + ")" };
+  }finally{ backupBusy = false; }
+}
+window.addEventListener("online", function(){ setTimeout(runBackup, 1500); });
+document.addEventListener("visibilitychange", function(){ if(document.visibilityState==="visible") setTimeout(runBackup, 1500); });
+setInterval(runBackup, 120000);
+
+/* =====================================================================
+   EXPORT: one ZIP with transactions.csv + signatures/ + doodles/
+   ===================================================================== */
+var CRC_T = (function(){ var t=new Uint32Array(256); for(var n=0;n<256;n++){ var c=n; for(var k=0;k<8;k++) c = (c&1) ? (0xEDB88320 ^ (c>>>1)) : (c>>>1); t[n]=c>>>0; } return t; })();
+function crc32(u){ var c=0xFFFFFFFF; for(var i=0;i<u.length;i++) c = CRC_T[(c ^ u[i]) & 255] ^ (c>>>8); return (c ^ 0xFFFFFFFF)>>>0; }
+function makeZip(files){
+  /* plain "stored" ZIP (PNGs are already compressed) */
+  var enc = new TextEncoder(), parts = [], central = [], offset = 0, d = new Date();
+  var dosT = (d.getHours()<<11)|(d.getMinutes()<<5)|(d.getSeconds()>>1), dosD = ((d.getFullYear()-1980)<<9)|((d.getMonth()+1)<<5)|d.getDate();
+  files.forEach(function(f){
+    var nm = enc.encode(f.name), data = f.data, crc = crc32(data), sz = data.length;
+    var h = new DataView(new ArrayBuffer(30));
+    h.setUint32(0,0x04034b50,true); h.setUint16(4,20,true); h.setUint16(6,0x0800,true); h.setUint16(8,0,true);
+    h.setUint16(10,dosT,true); h.setUint16(12,dosD,true); h.setUint32(14,crc,true); h.setUint32(18,sz,true); h.setUint32(22,sz,true);
+    h.setUint16(26,nm.length,true); h.setUint16(28,0,true);
+    parts.push(new Uint8Array(h.buffer), nm, data);
+    var c = new DataView(new ArrayBuffer(46));
+    c.setUint32(0,0x02014b50,true); c.setUint16(4,20,true); c.setUint16(6,20,true); c.setUint16(8,0x0800,true); c.setUint16(10,0,true);
+    c.setUint16(12,dosT,true); c.setUint16(14,dosD,true); c.setUint32(16,crc,true); c.setUint32(20,sz,true); c.setUint32(24,sz,true);
+    c.setUint16(28,nm.length,true); c.setUint32(42,offset,true);
+    central.push(new Uint8Array(c.buffer), nm);
+    offset += 30 + nm.length + sz;
+  });
+  var cdSize = central.reduce(function(a,b){ return a + b.length; }, 0);
+  var e = new DataView(new ArrayBuffer(22));
+  e.setUint32(0,0x06054b50,true); e.setUint16(8,files.length,true); e.setUint16(10,files.length,true); e.setUint32(12,cdSize,true); e.setUint32(16,offset,true);
+  return new Blob(parts.concat(central, [new Uint8Array(e.buffer)]), { type:"application/zip" });
+}
+var CSV_COLS = ["receipt_no","version","device","date","time","timezone","amount","condition","duration_s","signature_file","doodle_file","backed_up_to_drive"];
+function csvEsc(v){ v = v==null ? "" : String(v); return /[",\n]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v; }
+async function buildExport(){
+  var all = await dbAll("tx"), synced = await dbAll("sync"), done = {};
+  synced.forEach(function(s){ done[s.receipt_no] = true; });
+  all.sort(function(a,b){ return a.completed_at_iso < b.completed_at_iso ? -1 : 1; });
+  var files = [], rows = [CSV_COLS.join(",")];
+  all.forEach(function(r){
+    var sf = "signatures/" + r.receipt_no + "_signature.png", df = r.doodle_png ? "doodles/" + r.receipt_no + "_doodle.png" : "";
+    files.push({ name: sf, data: new Uint8Array(r.signature_png) });
+    if(df) files.push({ name: df, data: new Uint8Array(r.doodle_png) });
+    var row = { receipt_no:r.receipt_no, version:r.version, device:r.device, date:r.date, time:r.time, timezone:r.timezone,
+      amount:r.amount, condition:r.condition, duration_s:r.duration_s, signature_file:sf, doodle_file:df, backed_up_to_drive: done[r.receipt_no] ? "yes" : "no" };
+    rows.push(CSV_COLS.map(function(c){ return csvEsc(row[c]); }).join(","));
+  });
+  files.unshift({ name:"transactions.csv", data: new TextEncoder().encode(rows.join("\n") + "\n") });
+  var stamp = new Date(), name = "dollhouse_" + VERSION + "_" + deviceTag + "_" + stamp.getFullYear() + pad2(stamp.getMonth()+1) + pad2(stamp.getDate()) + "-" + pad2(stamp.getHours()) + pad2(stamp.getMinutes()) + ".zip";
+  return { blob: makeZip(files), name: name, count: all.length };
+}
+function downloadBlob(blob, name){
+  var a = document.createElement("a"), u = URL.createObjectURL(blob);
+  a.href = u; a.download = name; document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(u); a.remove(); }, 4000);
+}
+
+/* =====================================================================
+   HIDDEN STAFF PANEL: hold the store name on Screen 1 for ~2 s
+   ===================================================================== */
+var prepared = null;
+function fmtTime(d){ return d ? pad2(d.getHours())+":"+pad2(d.getMinutes()) : "–"; }
+async function renderStats(){
+  var rows = [], all = [], synced = [];
+  if(DB){ try{ all = await dbAll("tx"); synced = await dbAll("sync"); }catch(e){} }
+  var s = all.filter(function(r){ return r.condition==="SIGN"; }).length;
+  var standalone = (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || window.navigator.standalone === true;
+  var offline = !!(navigator.serviceWorker && navigator.serviceWorker.controller);
+  var persisted = null, usage = null;
+  try{ if(navigator.storage && navigator.storage.persisted) persisted = await navigator.storage.persisted(); }catch(e){}
+  try{ if(navigator.storage && navigator.storage.estimate){ var est = await navigator.storage.estimate(); usage = est.usage; } }catch(e){}
+  function row(k, v, cls){ rows.push('<div><span>'+k+'</span><span'+(cls?' class="'+cls+'"':'')+'>'+v+'</span></div>'); }
+  row("Version / device", VERSION + " / " + deviceTag);
+  row("Local storage", DB ? "working" : "NOT AVAILABLE", DB ? "good" : "bad");
+  row("Saved transactions", all.length + "  (" + s + " sign, " + (all.length - s) + " sign + doodle)");
+  row("Last saved receipt", lastSaved || (all.length ? all.map(function(r){return r.completed_at_iso+"|"+r.receipt_no;}).sort().pop().split("|")[1] : "–"));
+  if(unsavedCount) row("Not saved this session", String(unsavedCount), "bad");
+  row("Drive backup", backupOn() ? (synced.length + " of " + all.length + " uploaded") : "not configured", backupOn() ? (synced.length===all.length ? "good" : "") : "");
+  if(backupOn()) row("Last backup attempt", lastBackup.at ? fmtTime(lastBackup.at) + " – " + lastBackup.msg : "–");
+  row("Opened from Home Screen", standalone ? "yes" : "NO – use the Home Screen icon", standalone ? "good" : "bad");
+  row("Works offline", offline ? "yes" : "not yet (open once online, then reopen)", offline ? "good" : "bad");
+  row("Persistent storage", persisted===null ? "unknown" : (persisted ? "granted" : "not granted (normal on iPad)"));
+  if(usage!=null) row("Space used", (usage/1048576).toFixed(1) + " MB");
+  $("stats").innerHTML = rows.join("");
+  $("backupBtn").style.display = backupOn() ? "" : "none";
+  $("exportBtn").disabled = !DB;
+}
+function openData(){
+  prepared = null; $("saveRow").style.display = "none"; $("mnote").textContent = "";
+  $("delInput").value = ""; $("dangerBox").open = false;
+  $("dataModal").classList.add("on");
+  renderStats();
+}
+var titleT=null;
+$("storeTitle").addEventListener("pointerdown", function(){ titleT=setTimeout(openData, 1800); });
+["pointerup","pointerleave","pointercancel"].forEach(function(ev){ $("storeTitle").addEventListener(ev, function(){ clearTimeout(titleT); }); });
+$("closeBtn").addEventListener("click", function(){ $("dataModal").classList.remove("on"); });
+$("exportBtn").addEventListener("click", async function(){
+  $("mnote").textContent = "Preparing ZIP…";
+  try{
+    prepared = await buildExport();
+    $("saveRow").style.display = "flex";
+    $("mnote").textContent = "ZIP ready: " + prepared.count + " transactions (" + (prepared.blob.size/1048576).toFixed(1) + " MB). Tap Save / share ZIP.";
+  }catch(e){ $("mnote").textContent = "Export failed: " + ((e && e.message) || e); }
+});
+$("shareZipBtn").addEventListener("click", function(){
+  if(!prepared) return;
+  var file = null;
+  try{ file = new File([prepared.blob], prepared.name, { type:"application/zip" }); }catch(e){}
+  if(file && navigator.canShare && navigator.share && navigator.canShare({ files:[file] })){
+    navigator.share({ files:[file] }).then(function(){ $("mnote").textContent = "Shared " + prepared.name + "."; })
+      .catch(function(err){ if(!err || err.name!=="AbortError"){ downloadBlob(prepared.blob, prepared.name); $("mnote").textContent = "Downloading " + prepared.name + "…"; } });
+  } else {
+    downloadBlob(prepared.blob, prepared.name);
+    $("mnote").textContent = "Downloading " + prepared.name + " (check Downloads / Files).";
+  }
+});
+$("dlZipBtn").addEventListener("click", function(){
+  if(!prepared) return;
+  downloadBlob(prepared.blob, prepared.name);
+  $("mnote").textContent = "Downloading " + prepared.name + " (check Downloads / Files).";
+});
+$("backupBtn").addEventListener("click", async function(){
+  $("mnote").textContent = "Backing up…";
+  await runBackup();
+  $("mnote").textContent = "Backup: " + lastBackup.msg;
+  renderStats();
+});
+$("delBtn").addEventListener("click", async function(){
+  if($("delInput").value.trim().toUpperCase()!=="DELETE"){ $("mnote").textContent = "Type DELETE in the box first."; return; }
+  try{
+    await idb("tx", "readwrite", function(s){ return s.clear(); });
+    await idb("sync", "readwrite", function(s){ return s.clear(); });
+    lastSaved = null; unsavedCount = 0;
+    $("mnote").textContent = "All transactions deleted from this tablet.";
+    $("delInput").value = ""; $("dangerBox").open = false; renderStats();
+  }catch(e){ $("mnote").textContent = "Delete failed: " + ((e && e.message) || e); }
+});
+
+/* =====================================================================
+   START-UP
+   ===================================================================== */
+async function init(){
+  try{ DB = await openDB(); }
+  catch(e1){ try{ await sleep(500); DB = await openDB(); }catch(e2){ DB = null; dbError = e2; } }
+  await initIds();
+  if(!DB){
+    var w = $("storeWarn");
+    w.textContent = "This device cannot save transactions right now. Open the app from its Home Screen icon (not a private browser tab), then try again.";
+    w.hidden = false;
+  }
+  try{ if(navigator.storage && navigator.storage.persist) await navigator.storage.persist(); }catch(e){}
+  ready = true; renderMerchant();
+  setTimeout(runBackup, 3000);
+}
+if("serviceWorker" in navigator && location.protocol!=="file:"){
+  window.addEventListener("load", function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); });
+}
+renderMerchant();
+init();
+})();
+</script>
+</body>
+</html>
