@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="v-A">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -167,6 +167,9 @@
   #failModal h3{font-size:26px;margin:0 0 10px}
   #failModal p{font-size:16px;margin:0 0 22px}
   #failModal .mbtns{justify-content:center}
+  /* ---------- Version A: more prominent drawing-area headings ---------- */
+  .v-A .padlabel{font-size:16px;font-weight:700;color:var(--ink)}
+  @media (min-width:700px){ .v-A .padlabel{font-size:18px} }
 </style>
 </head>
 <body>
@@ -293,7 +296,10 @@
    VERSION "B": sign first, tap Next, then the doodle area activates. */
 var VERSION = "A", APP_VERSION = "4.0.0-" + VERSION;
 var CFG = window.DV_CONFIG || {};
-var INSTR = {
+var INSTR = VERSION==="A" ? {
+  sign:        "To complete your checkout, please sign your name in the box below.",
+  sign_doodle: "To complete your checkout, please sign your name in the first box below. Then draw a quick doodle in the second box."
+} : {
   sign:        "To complete your checkout, please sign your name in the space below.",
   sign_doodle: "To complete your checkout, please sign your name and add a little doodle in the spaces below."
 };
