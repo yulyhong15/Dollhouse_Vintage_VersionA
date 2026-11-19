@@ -170,6 +170,11 @@
   /* ---------- Version A: more prominent drawing-area headings ---------- */
   .v-A .padlabel{font-size:16px;font-weight:700;color:var(--ink)}
   @media (min-width:700px){ .v-A .padlabel{font-size:18px} }
+  /* ---------- survey request on the last page ---------- */
+  #done .survey{background:#f3ead8;border-radius:16px;padding:26px 20px;margin:32px 0 26px}
+  #done .survey-title{font-size:28px;font-weight:700;color:#1f1d1a;line-height:1.3;margin:0 0 8px;text-wrap:balance}
+  #done .survey-min{font-weight:400;color:#5c564d}
+  #done .survey-sub{font-size:20px;color:#5c564d;margin:0}
 </style>
 </head>
 <body>
@@ -245,6 +250,10 @@
 <section id="done" class="view">
   <div class="receipt">
     <h2>Thank you!</h2>
+    <div class="survey">
+      <p class="survey-title">Please complete our brief customer survey! <span class="survey-min">(2&nbsp;min)</span></p>
+      <p class="survey-sub">Scan the QR code on the stand with your phone.</p>
+    </div>
     <p>Please hand the tablet back to the seller.</p>
     <button class="go" id="nextBtn">Next Customer</button>
   </div>
@@ -294,7 +303,7 @@
 "use strict";
 /* VERSION "A": signature + doodle areas both active at once.
    VERSION "B": sign first, tap Next, then the doodle area activates. */
-var VERSION = "A", APP_VERSION = "4.0.0-" + VERSION;
+var VERSION = "A", APP_VERSION = "4.0.1-" + VERSION;
 var CFG = window.DV_CONFIG || {};
 var INSTR = VERSION==="A" ? {
   sign:        "To complete your checkout, please sign your name in the box below.",
