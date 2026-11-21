@@ -2,7 +2,7 @@
    including after the tablet is restarted. The cached copy is shown immediately and
    quietly refreshed in the background whenever the tablet is online.
    Transaction data is NOT stored here – it lives in IndexedDB and is never touched by this file. */
-var CACHE = "dollhouse-A-202611191830";
+var CACHE = "dollhouse-A-202611211200";
 var ASSETS = ["./", "./index.html", "./config.js", "./manifest.webmanifest", "./icon-180.png", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", function(e){

@@ -53,7 +53,8 @@
   .line{display:flex;justify-content:space-between;font-size:17px;padding:7px 0;font-variant-numeric:tabular-nums}
   .line .k{color:var(--muted)}
   .line.amt{font-size:22px;font-weight:700;border-top:1px solid var(--line);margin-top:6px;padding-top:14px}
-  .instr{font-size:20px;font-weight:700;line-height:1.35;margin:24px 0 12px}
+  .instr{font-size:20px;font-weight:500;line-height:1.35;margin:30px 0 26px}
+  .instr .em{font-weight:800;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
   .pads{display:flex;flex-direction:column;gap:14px}
   .padblock{display:flex;flex-direction:column;min-height:0;transition:opacity .25s ease}
   .padblock.hidden{display:none}
@@ -61,6 +62,9 @@
   .padlabel{font-size:14px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
   .pad{position:relative;height:200px;border:1.5px solid #d6d0c5;border-radius:12px;background:#fff;overflow:hidden;transition:border-color .25s ease,box-shadow .25s ease}
   .pad canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block}
+  .padph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:0 16px;text-align:center;
+    font-size:20px;font-weight:400;color:#bdb6aa;pointer-events:none;user-select:none;-webkit-user-select:none}
+  .pad.inked .padph{display:none}
   .row{display:flex;gap:12px;margin-top:14px}
   .clear{flex:0 0 auto;background:transparent;border:2px solid var(--line);border-radius:var(--radius);padding:10px 22px;min-height:48px;font-size:17px;font-weight:600}
   .complete{flex:1;border:0;border-radius:var(--radius);background:var(--accent);color:#fff;font-size:21px;font-weight:600;padding:18px}
@@ -121,7 +125,7 @@
     #customer .store{margin-bottom:clamp(12px,2vh,24px)}
     .line{font-size:20px;padding:8px 0}
     .line.amt{font-size:26px;padding-top:16px}
-    .instr{font-size:26px;margin:clamp(16px,2.6vh,28px) 0 clamp(12px,2vh,20px)}
+    .instr{font-size:26px;margin:clamp(22px,3.3vh,34px) 0 clamp(26px,3.6vh,34px)}
     .pads{flex:1;min-height:0;gap:clamp(12px,2vh,20px)}
     .padblock{flex:1}
     .padlabel{font-size:15px}
@@ -168,13 +172,74 @@
   #failModal p{font-size:16px;margin:0 0 22px}
   #failModal .mbtns{justify-content:center}
   /* ---------- Version A: more prominent drawing-area headings ---------- */
-  .v-A .padlabel{font-size:16px;font-weight:700;color:var(--ink)}
-  @media (min-width:700px){ .v-A .padlabel{font-size:18px} }
-  /* ---------- survey request on the last page ---------- */
-  #done .survey{background:#f3ead8;border-radius:16px;padding:26px 20px;margin:32px 0 26px}
-  #done .survey-title{font-size:28px;font-weight:700;color:#1f1d1a;line-height:1.3;margin:0 0 8px;text-wrap:balance}
-  #done .survey-min{font-weight:400;color:#5c564d}
-  #done .survey-sub{font-size:20px;color:#5c564d;margin:0}
+  .v-A .padlabel{font-size:20px;font-weight:700;color:var(--ink)}
+  @media (min-width:700px){ .v-A .padlabel{font-size:22px} }
+  /* ---------- survey invitation ---------- */
+  #invite{justify-content:center}
+  #invite .receipt{text-align:center;padding:56px 32px 28px}
+  .inv-line{font-size:28px;font-weight:700;line-height:1.3;margin:0 0 6px;text-wrap:balance}
+  .yn{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:36px}
+  .go.alt{background:#fff;color:var(--ink);border:2px solid var(--line)}
+  .svinfo{margin-top:30px;font-size:14px;color:var(--muted);line-height:1.5}
+  .svinfo summary{cursor:pointer;display:inline-block;padding:8px 10px;text-decoration:underline;text-underline-offset:3px}
+  .svinfo p{text-align:left;margin:8px 0 0}
+  /* ---------- survey pages ---------- */
+  .sv .receipt{max-width:1000px;padding:24px 32px}
+  .svhead{text-align:center;margin:0 0 clamp(22px,3.4vh,34px)}
+  .svtitle{font-size:22px;font-weight:700}
+  .svpage{font-size:13px;color:#b1aa9e;text-align:center;flex:1}
+  .svexit{flex:0 0 auto;min-width:200px;text-align:left;background:none;border:0;padding:12px 0;font-size:13px;color:#b1aa9e;text-decoration:underline;text-underline-offset:3px}
+  .svdlg .box{text-align:center;padding:36px 28px;max-width:440px}
+  .svdlg h3{font-size:26px;margin:0 0 10px}
+  .svdlg p{font-size:16px;margin:0 0 22px}
+  .svdlg .mbtns{justify-content:center}
+  #idleModal h3{margin-bottom:24px}
+  .svdlg .mbtn{font-size:18px;padding:14px 22px;min-width:150px}
+  .q{margin:0 0 clamp(26px,4vh,40px)}
+  .qintro,.qtext{font-size:19px;line-height:1.4;margin:0}
+  .qtext{margin:4px 0 14px}
+  .qtext .note{display:block;font-size:16px;color:var(--muted);margin-top:2px}
+  .scale{display:grid;grid-template-columns:repeat(var(--n),1fr);gap:8px}
+  .sbtn{height:54px;border:2px solid var(--line);background:#fff;border-radius:12px;font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;padding:0}
+  .sbtn.on,.opt.on{background:var(--sel);border-color:var(--sel);color:var(--sel-ink)}
+  .anchors{display:flex;justify-content:space-between;gap:24px;margin-top:6px;font-size:15px;color:var(--muted);line-height:1.3}
+  .anchors span{max-width:45%}
+  .anchors span:last-child{text-align:right}
+  .opts{display:grid;grid-template-columns:1fr 1fr;grid-auto-flow:column;grid-template-rows:repeat(var(--rows),auto);gap:8px 12px}
+  .opt{display:flex;align-items:center;gap:12px;min-height:48px;padding:6px 16px;border:2px solid var(--line);border-radius:12px;background:#fff;font-size:17px;text-align:left}
+  .opt .mark{flex:0 0 auto;width:20px;height:20px;border:2px solid #bfb8ac;border-radius:50%;background:#fff}
+  .opts.multi .opt .mark{border-radius:5px}
+  .opt.on .mark{border-color:#fff;box-shadow:inset 0 0 0 4px var(--sel)}
+  .svin{display:block;width:100%;margin-top:10px;padding:12px 14px;border:2px solid var(--line);border-radius:12px;background:#fff;font-size:18px;color:var(--ink)}
+  .svin:focus{outline:none;border-color:var(--ink)}
+  .svin[hidden]{display:none}
+  textarea.svin{resize:none;line-height:1.4;margin-top:0}
+  .svnav{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-top:4px}
+  .svnav .go{width:auto;min-width:200px;padding:18px 40px;font-size:22px}
+  .svmsg{margin:8px 0 0;text-align:right;font-size:15px;color:#8a1f1f}
+  .svmsg:empty{display:none}
+  @media (min-width:700px){
+    .inv-line{font-size:34px}
+    #invite .receipt{max-width:760px;padding:72px 48px 32px}
+  }
+  /* landscape tablet: compact survey pages so they fit the screen without scrolling */
+  @media (min-width:1000px) and (orientation:landscape){
+    .sv{padding-top:18px;padding-bottom:18px}
+    .sv .receipt{max-width:1100px;padding:26px 44px 22px}
+    .svhead{margin-bottom:26px}
+    .svtitle{font-size:21px}
+    .q{margin-bottom:30px}
+    .qtext{margin:4px 0 12px}
+    .sbtn{height:50px}
+    .anchors{margin-top:5px}
+    .opts{grid-template-columns:1fr 1fr 1fr;grid-template-rows:repeat(var(--rows3),auto);gap:10px 12px}
+    .opts.multi{grid-template-columns:1fr 1fr;grid-template-rows:repeat(var(--rows),auto)}   /* store offerings: longer labels, keep two columns */
+    .opt{min-height:46px;padding:5px 14px;font-size:17px}
+    .svin{padding:10px 14px;margin-top:10px}
+    textarea.svin{margin-top:0}
+    .svnav .go{padding:14px 40px}
+  }
+  @media (max-width:560px){ .opts{grid-template-columns:1fr;grid-auto-flow:row;grid-template-rows:none} .sbtn{font-size:17px;height:46px} .scale{gap:4px} .svexit{min-width:0} .svnav .go{min-width:0;padding:16px 24px} }
 </style>
 </head>
 <body>
@@ -233,11 +298,11 @@
     <div class="pads">
       <div class="padblock" id="sigBlock">
         <div class="padhead"><span class="padlabel">Signature</span><button class="clear" id="sigClear">Clear</button></div>
-        <div class="pad" id="sigWrap"><canvas id="sigPad" aria-label="Signature area"></canvas></div>
+        <div class="pad" id="sigWrap"><div class="padph" aria-hidden="true">Sign your name here</div><canvas id="sigPad" aria-label="Signature area"></canvas></div>
       </div>
       <div class="padblock" id="dooBlock">
         <div class="padhead"><span class="padlabel">Doodle</span><button class="clear" id="dooClear">Clear</button></div>
-        <div class="pad" id="dooWrap"><canvas id="dooPad" aria-label="Doodle area"></canvas></div>
+        <div class="pad" id="dooWrap"><div class="padph" aria-hidden="true">Draw a little picture here</div><canvas id="dooPad" aria-label="Doodle area"></canvas></div>
       </div>
     </div>
     <div class="row">
@@ -246,20 +311,99 @@
   </div>
 </section>
 
+<!-- ============ SURVEY INVITATION (shown after the checkout has been saved) ============ -->
+<section id="invite" class="view">
+  <div class="receipt">
+    <p class="inv-line">Will you share your feedback in a quick customer survey?</p>
+    <p class="inv-line">It only takes two minutes!</p>
+    <div class="yn">
+      <button class="go" id="svYes">Yes</button>
+      <button class="go alt" id="svNo">No</button>
+    </div>
+    <!-- study information (wording supplied by the research team, Nov 21) -->
+    <details class="svinfo" id="svInfo">
+      <summary>Survey information</summary>
+      <p>The survey asks about your shopping and payment experience. Participation is voluntary, and you may skip any question or stop at any time. Your responses will be used for research purposes.</p>
+    </details>
+  </div>
+</section>
+
+<!-- ============ SURVEY PAGE 1: payment experience ============ -->
+<section id="s1" class="view sv">
+  <div class="receipt">
+    <div class="svhead"><div class="svtitle">Dollhouse Vintage - Customer Survey</div></div>
+    <div class="q">
+      <p class="qintro">Sometimes, spending our hard-earned money can feel painful, even when we are buying something we want.</p>
+      <p class="qtext" style="margin-top:12px"><strong>When you paid for your purchase, how much pain did you feel?</strong></p>
+      <div class="scale" data-field="pain" data-n="10"></div>
+      <div class="anchors"><span>No pain</span><span>A great deal of pain</span></div>
+    </div>
+    <div class="q">
+      <p class="qtext">How <strong>novel</strong> was the <strong>experience of paying</strong> for your purchase?</p>
+      <div class="scale" data-field="novelty" data-n="9"></div>
+      <div class="anchors"><span>Not at all novel</span><span>Extremely novel</span></div>
+    </div>
+    <div class="q">
+      <p class="qtext">What payment method did you use?</p>
+      <div class="opts" id="payOpts"></div>
+      <input class="svin" id="payOther" type="text" maxlength="200" autocomplete="off" placeholder="Please specify" aria-label="Other payment method" hidden>
+    </div>
+    <div class="svnav"><button class="svexit" data-exit>Exit survey</button><span class="svpage">Page 1 of 2</span><button class="go" id="s1Next" disabled>Next</button></div>
+    <p class="svmsg" id="s1Msg"></p>
+  </div>
+</section>
+
+<!-- ============ SURVEY PAGE 2: Dollhouse Vintage questions ============ -->
+<section id="s2" class="view sv">
+  <div class="receipt">
+    <div class="svhead"><div class="svtitle">Dollhouse Vintage - Customer Survey</div></div>
+    <div class="q">
+      <p class="qtext">When shopping for vintage clothing, which of the following best describes your preference?</p>
+      <div class="scale" data-field="shopping_preference" data-n="5"></div>
+      <div class="anchors"><span>Buying several affordable items</span><span>Spending more on one unique or statement piece</span></div>
+    </div>
+    <div class="q">
+      <p class="qtext">Which of the following would you be MOST interested in seeing our store provide? <strong>(Select up to two.)</strong></p>
+      <div class="opts multi" id="offOpts"></div>
+      <input class="svin" id="offOther" type="text" maxlength="200" autocomplete="off" placeholder="Please specify" aria-label="Other store offering" hidden>
+    </div>
+    <div class="q">
+      <p class="qtext">In your own words, what would make you want to return to a vintage clothing or accessories store?<span class="note">(feel free to write as little or as much as you wish)</span></p>
+      <textarea class="svin" id="feedback" rows="3" maxlength="2000" aria-label="Written feedback (optional)"></textarea>
+    </div>
+    <div class="svnav"><button class="svexit" data-exit>Exit survey</button><span class="svpage">Page 2 of 2</span><button class="go" id="s2Submit" disabled>Submit</button></div>
+    <p class="svmsg" id="s2Msg"></p>
+  </div>
+</section>
+
+<!-- Exit survey: asks once more so a stray tap does not end the survey -->
+<div class="modal svdlg" id="exitModal" role="dialog" aria-modal="true">
+  <div class="box">
+    <h3>End the survey?</h3>
+    <p>Your answers so far will be saved.</p>
+    <div class="mbtns"><button class="mbtn dark" id="exitNo">Continue survey</button><button class="mbtn" id="exitYes">End survey</button></div>
+  </div>
+</div>
+<!-- shown after 90 s without a tap on the invitation or survey; ends the survey only if nobody answers within 30 s -->
+<div class="modal svdlg" id="idleModal" role="dialog" aria-modal="true">
+  <div class="box">
+    <h3>Are you still there?</h3>
+    <div class="mbtns"><button class="mbtn dark" id="idleContinue">Continue</button></div>
+  </div>
+</div>
+
 <!-- ============ SCREEN 3: DONE ============ -->
 <section id="done" class="view">
   <div class="receipt">
     <h2>Thank you!</h2>
-    <div class="survey">
-      <p class="survey-title">Please complete our brief customer survey! <span class="survey-min">(2&nbsp;min)</span></p>
-      <p class="survey-sub">Scan the QR code on the stand with your phone.</p>
-    </div>
     <p>Please hand the tablet back to the seller.</p>
     <button class="go" id="nextBtn">Next Customer</button>
   </div>
 </section>
 
-<!-- Hidden: press-and-hold top-left corner on the customer screen to cancel back to Screen 1 (nothing is saved) -->
+<!-- Hidden: press-and-hold top-left corner ~2 s.
+     On the customer screen: cancels the checkout (nothing is saved).
+     On the survey screens: ends the survey (saved as "interrupted"; the checkout stays saved) and returns to Screen 1. -->
 <div id="corner" aria-hidden="true"></div>
 
 <!-- Shown only if a checkout could not be saved after automatic retries -->
@@ -303,7 +447,7 @@
 "use strict";
 /* VERSION "A": signature + doodle areas both active at once.
    VERSION "B": sign first, tap Next, then the doodle area activates. */
-var VERSION = "A", APP_VERSION = "4.0.1-" + VERSION;
+var VERSION = "A", APP_VERSION = "4.1.2-" + VERSION;   /* 4.1.0 = in-app survey build; saved with every record as the build identifier */
 var CFG = window.DV_CONFIG || {};
 var INSTR = VERSION==="A" ? {
   sign:        "To complete your checkout, please sign your name in the box below.",
@@ -313,22 +457,41 @@ var INSTR = VERSION==="A" ? {
   sign_doodle: "To complete your checkout, please sign your name and add a little doodle in the spaces below."
 };
 var COND_LABEL = { sign:"SIGN", sign_doodle:"SIGN + DOODLE" };
+/* the exact wording above is kept; in Version A only the phrase "draw a quick doodle" is emphasised */
+var EMPH = "draw a quick doodle";
+function renderInstr(cond){
+  var t = INSTR[cond], el = $("instr"), i = VERSION==="A" ? t.indexOf(EMPH) : -1;
+  el.textContent = "";
+  if(i<0){ el.textContent = t; return; }
+  var b = document.createElement("span"); b.className = "em"; b.textContent = EMPH;
+  el.appendChild(document.createTextNode(t.slice(0,i))); el.appendChild(b); el.appendChild(document.createTextNode(t.slice(i+EMPH.length)));
+}
 
 function $(id){ return document.getElementById(id); }
 function pad2(n){ return String(n).padStart(2,"0"); }
 function sleep(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+var VIEWS = ["merchant","customer","invite","s1","s2","done"], curView = "merchant";
 function show(id){
-  ["merchant","customer","done"].forEach(function(v){ $(v).classList.toggle("active", v===id); });
-  $("corner").classList.toggle("on", id==="customer");
-  document.documentElement.classList.toggle("lock", id!=="merchant");  /* no page scrolling/bounce while the customer draws */
+  curView = id;
+  VIEWS.forEach(function(v){ $(v).classList.toggle("active", v===id); });
+  $("corner").classList.toggle("on", id==="customer" || id==="invite" || id==="s1" || id==="s2");
+  /* no page scrolling/bounce while the customer draws; the survey pages may scroll (on-screen keyboard) */
+  document.documentElement.classList.toggle("lock", id==="customer" || id==="invite" || id==="done");
+  if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
   window.scrollTo(0,0);
+  if(id==="invite" || id==="s1" || id==="s2") armIdle(); else stopIdle();
 }
 
 /* =====================================================================
    LOCAL STORAGE (IndexedDB)
-   store "tx"   : one record per completed checkout, written once, never modified
-   store "sync" : which receipts have been copied to the Google Drive backup
-   store "meta" : device id + receipt counter (mirrored in localStorage)
+   store "tx"     : one record per completed checkout, written once, never modified
+   store "survey" : (new in database version 2) one record per receipt with the survey
+                    invitation/answers; updated in place, each update increases "rev"
+   store "sync"   : what has been copied to the Google Drive backup, per receipt:
+                    { receipt_no, at, tx:true, survey_rev: last survey revision confirmed by the server }
+                    (entries written by earlier builds have no survey_rev = transaction only)
+   store "meta"   : device id + receipt counter (mirrored in localStorage)
+   Upgrading from database version 1 only ADDS the "survey" store; nothing is deleted or rewritten.
    ===================================================================== */
 var DB = null, dbError = null;
 function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
@@ -338,14 +501,21 @@ function openDB(){
   return new Promise(function(resolve, reject){
     var done = false, req;
     var t = setTimeout(function(){ if(!done){ done = true; reject(new Error("IndexedDB open timed out")); } }, 4000);
-    try{ req = indexedDB.open("dollhouse_checkout", 1); }catch(e){ clearTimeout(t); reject(e); return; }
+    try{ req = indexedDB.open("dollhouse_checkout", 2); }catch(e){ clearTimeout(t); reject(e); return; }
     req.onupgradeneeded = function(){
       var d = req.result;
-      if(!d.objectStoreNames.contains("tx"))   d.createObjectStore("tx",   { keyPath:"receipt_no" });
-      if(!d.objectStoreNames.contains("sync")) d.createObjectStore("sync", { keyPath:"receipt_no" });
-      if(!d.objectStoreNames.contains("meta")) d.createObjectStore("meta");
+      if(!d.objectStoreNames.contains("tx"))     d.createObjectStore("tx",     { keyPath:"receipt_no" });
+      if(!d.objectStoreNames.contains("sync"))   d.createObjectStore("sync",   { keyPath:"receipt_no" });
+      if(!d.objectStoreNames.contains("meta"))   d.createObjectStore("meta");
+      if(!d.objectStoreNames.contains("survey")) d.createObjectStore("survey", { keyPath:"receipt_no" });
     };
-    req.onsuccess = function(){ if(done){ return; } done = true; clearTimeout(t); resolve(req.result); };
+    req.onsuccess = function(){
+      if(done){ try{ req.result.close(); }catch(_){} return; }
+      done = true; clearTimeout(t);
+      var d = req.result;
+      d.onversionchange = function(){ try{ d.close(); }catch(_){} DB = null; };
+      resolve(d);
+    };
     req.onerror   = function(){ if(done){ return; } done = true; clearTimeout(t); reject(req.error); };
   });
 }
@@ -448,8 +618,9 @@ function makePad(key, wrapId, canvasId){
     p.canvas.width=Math.round(p.W*dpr); p.canvas.height=Math.round(p.H*dpr);
     p.ctx.setTransform(dpr,0,0,dpr,0,0); p.redraw();
   };
-  p.redraw = function(){ p.ctx.clearRect(0,0,p.W,p.H); p.strokes.forEach(function(s){ strokePath(p.ctx, s); }); if(p.active) strokePath(p.ctx, p.active); };
-  p.reset = function(){ p.strokes=[]; p.active=null; p.activeId=null; p.W=0; p.H=0; p.size(); };
+  p.redraw = function(){ p.ctx.clearRect(0,0,p.W,p.H); p.strokes.forEach(function(s){ strokePath(p.ctx, s); }); if(p.active) strokePath(p.ctx, p.active);
+    p.wrap.classList.toggle("inked", p.strokes.length>0 || !!p.active); };
+  p.reset = function(){ p.strokes=[]; p.active=null; p.activeId=null; p.W=0; p.H=0; p.wrap.classList.remove("inked"); p.size(); };
   function pt(e){ var r=p.canvas.getBoundingClientRect(); return [e.clientX-r.left, e.clientY-r.top]; }
 
   p.canvas.addEventListener("pointerdown", function(e){
@@ -516,7 +687,7 @@ function startCustomer(){
   $("rDate").textContent = now.toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"});
   $("rNo").textContent = cur.receipt_no;
   $("rAmt").textContent = "$" + cur.amount;
-  $("instr").textContent = INSTR[selCond];
+  renderInstr(selCond);
   $("dooBlock").classList.toggle("hidden", selCond!=="sign_doodle");
   stage = "sign"; saving = false;
   show("customer");
@@ -616,9 +787,10 @@ async function completeCheckout(){
   try{
     if(!pendingRec) pendingRec = await buildRecord();
     await saveAndVerify(pendingRec);
+    var savedRec = pendingRec;
     lastSaved = pendingRec.receipt_no;
     pendingRec = null; saving = false; cur = null;
-    show("done");
+    openInvite(savedRec);                 /* the checkout and its images are already saved at this point */
     setTimeout(runBackup, 800);
   }catch(e){
     lastSaveError = (e && e.message) || String(e);
@@ -631,9 +803,240 @@ $("skipBtn").addEventListener("click", function(){
   unsavedCount++; pendingRec = null; saving = false; cur = null; show("done");
 });
 
+/* =====================================================================
+   IN-APP SURVEY (after the checkout has been saved)
+   One survey record per receipt in the "survey" store. Every change is written at once
+   (text fields after a short pause) and increases "rev", so the newest version always wins.
+   status: invited -> declined | in_progress -> completed
+           invited / in_progress -> interrupted, with end_reason:
+             "exit"       – Exit survey link (+ confirmation)
+             "timeout"    – no answer to "Are you still there?" (90 s idle + 30 s)
+             "staff_hold" – hidden top-left corner hold
+             "app_closed" – app closed/reloaded during the survey (found at next start)
+   ===================================================================== */
+var PAY_OPTS   = ["Credit card (physical)","Debit card (physical)","Apple Pay / Google Pay","Venmo","Cash App","Paypal","Zelle","Cash","Other (please specify)"];
+var OFFER_OPTS = ["New arrivals weekly","Themed collections / curated racks","Sales and promotions","Customer appreciation events","Styling inspiration","Shopping events after hours","Other (please specify)"];
+var OTHER = "Other (please specify)";
+function optValue(label){ return label===OTHER ? "Other" : label; }   /* stored value; "Other" text goes in its own field */
+
+var sv = null, svQueue = Promise.resolve(), svTextT = null, svBusy = false, svLastSaveOk = true;
+function isoNow(){ return new Date().toISOString(); }
+function newSurvey(rec){
+  return { receipt_no: rec.receipt_no, version: VERSION, device: rec.device, app_version: APP_VERSION,
+    rev: 0, updated_at: "", invited_at: isoNow(), response: "", started_at: "", status: "invited",
+    completed_at: "", interrupted_at: "", end_reason: "", duration_s: "",
+    pain: null, novelty: null, payment_method: "", payment_method_other: "",
+    shopping_preference: null, store_offerings: [], store_offerings_other: "", feedback: "" };
+}
+function putSurvey(snap){
+  return (async function(){
+    for(var attempt=1; attempt<=3; attempt++){
+      try{
+        if(!DB) DB = await openDB();
+        await idb("survey", "readwrite", function(st){ return st.put(snap); });
+        return true;
+      }catch(e){ await sleep(300*attempt); }
+    }
+    return false;
+  })();
+}
+/* save the current survey state as a new revision (writes are queued, so they land in order) */
+function svPersist(){
+  if(!sv) return Promise.resolve(false);
+  sv.rev += 1; sv.updated_at = isoNow();
+  var snap = JSON.parse(JSON.stringify(sv));
+  svQueue = svQueue.then(function(){ return putSurvey(snap); }).then(function(ok){ svLastSaveOk = ok; return ok; });
+  return svQueue;
+}
+function svFlushText(){
+  if(svTextT){ clearTimeout(svTextT); svTextT = null; return svPersist(); }
+  return svQueue;
+}
+function svTextChanged(){ clearTimeout(svTextT); svTextT = setTimeout(function(){ svTextT = null; svPersist(); }, 600); }
+
+/* build the scales and option lists once */
+Array.prototype.forEach.call(document.querySelectorAll(".scale"), function(box){
+  var n = +box.dataset.n, f = box.dataset.field;
+  box.style.setProperty("--n", n);
+  for(var i=1;i<=n;i++){
+    var b = document.createElement("button"); b.className = "sbtn"; b.textContent = i; b.dataset.v = i;
+    b.setAttribute("aria-label", f + " " + i);
+    b.addEventListener("click", function(){ if(!sv) return; sv[f] = +this.dataset.v; renderSurvey(); svPersist(); });
+    box.appendChild(b);
+  }
+});
+function buildOpts(boxId, labels, multi, onPick){
+  var box = $(boxId); box.style.setProperty("--rows", Math.ceil(labels.length/2)); box.style.setProperty("--rows3", Math.ceil(labels.length/3));
+  labels.forEach(function(l){
+    var b = document.createElement("button"); b.className = "opt"; b.dataset.v = optValue(l);
+    var m = document.createElement("span"); m.className = "mark";
+    var t = document.createElement("span"); t.textContent = l;
+    b.appendChild(m); b.appendChild(t);
+    b.addEventListener("click", function(){ if(sv) onPick(this.dataset.v); });
+    box.appendChild(b);
+  });
+}
+buildOpts("payOpts", PAY_OPTS, false, function(v){
+  sv.payment_method = v;
+  if(v!=="Other"){ sv.payment_method_other = ""; $("payOther").value = ""; }
+  renderSurvey(); svPersist();
+  if(v==="Other") setTimeout(function(){ $("payOther").focus(); }, 50);
+});
+buildOpts("offOpts", OFFER_OPTS, true, function(v){
+  var a = sv.store_offerings, i = a.indexOf(v);
+  if(i>=0){ a.splice(i,1); if(v==="Other"){ sv.store_offerings_other = ""; $("offOther").value = ""; } }
+  else if(a.length<2){ a.push(v); }
+  else return;                                    /* already two selected: tap one to unselect first */
+  renderSurvey(); svPersist();
+  if(v==="Other" && a.indexOf("Other")>=0) setTimeout(function(){ $("offOther").focus(); }, 50);
+});
+$("payOther").addEventListener("input", function(){ if(!sv) return; sv.payment_method_other = this.value; renderSurvey(); svTextChanged(); });
+$("offOther").addEventListener("input", function(){ if(!sv) return; sv.store_offerings_other = this.value; svTextChanged(); });
+$("feedback").addEventListener("input", function(){ if(!sv) return; sv.feedback = this.value; svTextChanged(); });
+["payOther","offOther","feedback"].forEach(function(id){ $(id).addEventListener("blur", function(){ if(sv) svFlushText(); }); });
+
+function page1Done(){ return !!(sv && sv.pain && sv.novelty && sv.payment_method && (sv.payment_method!=="Other" || sv.payment_method_other.trim())); }
+function page2Done(){ return !!(sv && sv.shopping_preference && sv.store_offerings.length>=1); }
+function renderSurvey(){
+  if(!sv) return;
+  Array.prototype.forEach.call(document.querySelectorAll(".scale"), function(box){
+    var v = sv[box.dataset.field];
+    Array.prototype.forEach.call(box.children, function(b){ b.classList.toggle("on", +b.dataset.v===v); });
+  });
+  Array.prototype.forEach.call($("payOpts").children, function(b){ b.classList.toggle("on", b.dataset.v===sv.payment_method); });
+  Array.prototype.forEach.call($("offOpts").children, function(b){ b.classList.toggle("on", sv.store_offerings.indexOf(b.dataset.v)>=0); });
+  $("payOther").hidden = sv.payment_method!=="Other";
+  $("offOther").hidden = sv.store_offerings.indexOf("Other")<0;
+  if($("payOther").value!==sv.payment_method_other) $("payOther").value = sv.payment_method_other;
+  if($("offOther").value!==sv.store_offerings_other) $("offOther").value = sv.store_offerings_other;
+  if($("feedback").value!==sv.feedback) $("feedback").value = sv.feedback;
+  $("s1Next").disabled = svBusy || !page1Done();
+  $("s2Submit").disabled = svBusy || !page2Done();
+}
+function clearSurveyUI(){
+  sv = null; clearTimeout(svTextT); svTextT = null; svBusy = false;
+  ["payOther","offOther","feedback"].forEach(function(id){ $(id).value = ""; $(id).hidden = id!=="feedback"; });
+  Array.prototype.forEach.call(document.querySelectorAll(".sbtn,.opt"), function(b){ b.classList.remove("on"); });
+  $("s1Msg").textContent = ""; $("s2Msg").textContent = ""; $("svInfo").open = false;
+  $("exitModal").classList.remove("on"); $("idleModal").classList.remove("on");
+  $("s1Next").disabled = true; $("s2Submit").disabled = true;
+}
+
+function openInvite(rec){
+  clearSurveyUI();
+  sv = newSurvey(rec);
+  svPersist();                                     /* records that the invitation was displayed */
+  renderSurvey();
+  show("invite");
+}
+$("svYes").addEventListener("click", function(){
+  if(!sv || sv.status!=="invited") return;
+  sv.response = "yes"; sv.status = "in_progress"; sv.started_at = isoNow();
+  svPersist(); renderSurvey(); show("s1");
+});
+$("svNo").addEventListener("click", async function(){
+  if(!sv || sv.status!=="invited" || svBusy) return;
+  svBusy = true;
+  sv.response = "no"; sv.status = "declined";
+  await svPersist();
+  svBusy = false; show("done");
+  setTimeout(runBackup, 800);
+});
+/* read back what is stored and compare with what is on screen */
+async function svVerify(fields){
+  try{
+    var st = await dbGet("survey", sv.receipt_no);
+    if(!st) return false;
+    return fields.every(function(f){ return JSON.stringify(st[f])===JSON.stringify(sv[f]); });
+  }catch(e){ return false; }
+}
+var P1 = ["pain","novelty","payment_method","payment_method_other"];
+var P2 = ["shopping_preference","store_offerings","store_offerings_other","feedback","status"];
+$("s1Next").addEventListener("click", async function(){
+  if(!page1Done() || svBusy) return;
+  svBusy = true; renderSurvey(); $("s1Msg").textContent = "";
+  await svFlushText();
+  var ok = await svVerify(P1);
+  if(!ok){ await svPersist(); ok = await svVerify(P1); }      /* one more try */
+  svBusy = false; renderSurvey();
+  if(!ok){ $("s1Msg").textContent = "Saving… please tap Next again."; return; }
+  show("s2");
+});
+$("s2Submit").addEventListener("click", async function(){
+  if(!page2Done() || svBusy) return;
+  svBusy = true; renderSurvey(); $("s2Msg").textContent = "";
+  clearTimeout(svTextT); svTextT = null;
+  var end = new Date();
+  sv.status = "completed"; sv.completed_at = end.toISOString();
+  if(sv.started_at) sv.duration_s = Math.round((end - new Date(sv.started_at))/100)/10;
+  await svPersist();
+  var ok = await svVerify(P1.concat(P2));
+  if(!ok){ await svPersist(); ok = await svVerify(P1.concat(P2)); }
+  svBusy = false;
+  if(!ok){ $("s2Msg").textContent = "Saving… please tap Submit again."; sv.status = "in_progress"; sv.completed_at = ""; sv.duration_s = ""; renderSurvey(); return; }
+  show("done");
+  setTimeout(runBackup, 800);
+});
+/* end an unfinished survey: answers so far are kept, status "interrupted" with the reason.
+   dest "done" -> the usual Thank-you screen (Grace taps Next Customer); "merchant" -> straight to Screen 1 */
+async function endSurvey(reason, dest){
+  stopIdle(); $("exitModal").classList.remove("on"); $("idleModal").classList.remove("on");
+  if(sv && (sv.status==="invited" || sv.status==="in_progress")){
+    clearTimeout(svTextT); svTextT = null;
+    sv.status = "interrupted"; sv.interrupted_at = isoNow(); sv.end_reason = reason;
+    await svPersist();
+  }
+  if(dest==="done") show("done"); else resetAll();
+  setTimeout(runBackup, 800);
+}
+function abandonSurvey(){ return endSurvey("staff_hold", "merchant"); }
+
+/* Exit survey link (bottom-left, deliberately quiet): confirm first */
+Array.prototype.forEach.call(document.querySelectorAll("[data-exit]"), function(b){
+  b.addEventListener("click", function(){ if(sv && !svBusy) $("exitModal").classList.add("on"); });
+});
+$("exitNo").addEventListener("click", function(){ $("exitModal").classList.remove("on"); });
+$("exitYes").addEventListener("click", function(){ if(!svBusy) endSurvey("exit", "done"); });
+
+/* "Are you still there?": after IDLE_MS without a tap on the invitation/survey, ask; end only after GRACE_MS more */
+var IDLE_MS = 90000, GRACE_MS = 30000, idleT = null, graceT = null;
+function surveyView(){ return curView==="invite" || curView==="s1" || curView==="s2"; }
+function stopIdle(){ clearTimeout(idleT); clearTimeout(graceT); idleT = graceT = null; }
+function armIdle(){
+  stopIdle();
+  if(!surveyView() || !sv || $("idleModal").classList.contains("on")) return;
+  idleT = setTimeout(promptIdle, IDLE_MS);
+}
+function promptIdle(){
+  if(!surveyView() || !sv) return;
+  $("exitModal").classList.remove("on");
+  if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  $("idleModal").classList.add("on");
+  graceT = setTimeout(function timeUp(){
+    if(svBusy){ graceT = setTimeout(timeUp, 1000); return; }
+    endSurvey("timeout", "done");
+  }, GRACE_MS);
+}
+$("idleContinue").addEventListener("click", function(){ $("idleModal").classList.remove("on"); armIdle(); });
+["pointerdown","keydown","input"].forEach(function(ev){
+  document.addEventListener(ev, function(){ if(surveyView() && !$("idleModal").classList.contains("on")) armIdle(); }, true);
+});
+/* on start-up: a survey left open by a closed/reloaded app is marked interrupted (never continued by the next customer) */
+async function recoverSurveys(){
+  if(!DB) return;
+  try{
+    var open = (await dbAll("survey")).filter(function(r){ return r.status==="invited" || r.status==="in_progress"; });
+    for(var i=0;i<open.length;i++){
+      var r = open[i]; r.status = "interrupted"; r.interrupted_at = isoNow(); r.end_reason = "app_closed"; r.rev = (r.rev||0) + 1; r.updated_at = r.interrupted_at;
+      await putSurvey(r);
+    }
+  }catch(e){}
+}
+
 /* ---------- Screen 3 ---------- */
 function resetAll(){
   entry = ""; selCond = null; cur = null; stage = null; saving = false; pendingRec = null;
+  clearSurveyUI();
   sig.strokes=[]; doo.strokes=[]; sig.active=doo.active=null; sig.activeId=doo.activeId=null;
   ["sigBlock","dooBlock"].forEach(function(id){ $(id).classList.remove("current","locked","inactive"); });
   renderMerchant(); show("merchant");
@@ -642,15 +1045,20 @@ $("nextBtn").addEventListener("click", resetAll);
 
 /* hidden cancel: hold top-left corner ~2 s on the customer screen (nothing is saved) */
 var holdT=null;
-$("corner").addEventListener("pointerdown", function(e){ e.preventDefault(); holdT=setTimeout(function(){ if(!saving) resetAll(); }, 1800); });
+$("corner").addEventListener("pointerdown", function(e){ e.preventDefault(); holdT=setTimeout(function(){
+  if(curView==="invite" || curView==="s1" || curView==="s2"){ if(!svBusy) abandonSurvey(); }
+  else if(!saving) resetAll();
+}, 1800); });
 ["pointerup","pointerleave","pointercancel"].forEach(function(ev){ $("corner").addEventListener(ev, function(){ clearTimeout(holdT); }); });
 
 var rt=null; window.addEventListener("resize", function(){ clearTimeout(rt); rt=setTimeout(function(){ if($("customer").classList.contains("active")){ sig.size(); doo.size(); } },120); });
 
 /* =====================================================================
    GOOGLE DRIVE BACKUP (only if config.js has a backupUrl)
-   Runs whenever the tablet is online with the app open. Each saved checkout is
-   uploaded once; the server ignores repeats, so retries never create duplicates.
+   Runs whenever the tablet is online with the app open (not while the app is closed).
+   Each checkout is uploaded once with its images. Survey answers that arrive later are
+   sent as updates of the same receipt, tagged with their revision number; the server
+   keeps only the newest revision, so retries never create duplicate rows or images.
    ===================================================================== */
 var backupBusy = false, lastBackup = { at:null, msg:"" }, lastSaved = null, lastSaveError = "", unsavedCount = 0;
 function backupOn(){ return !!(CFG.backupUrl && /^(https:\/\/|http:\/\/localhost[:/])/.test(CFG.backupUrl)); }
@@ -660,37 +1068,97 @@ function b64(buf){
   for(var i=0;i<u.length;i+=CH) s += String.fromCharCode.apply(null, u.subarray(i, i+CH));
   return btoa(s);
 }
-async function uploadOne(r){
-  var body = JSON.stringify({
-    token: CFG.backupToken || "", receipt_no: r.receipt_no, version: r.version, device: r.device,
-    date: r.date, time: r.time, timezone: r.timezone, amount: r.amount, condition: r.condition,
-    duration_s: r.duration_s, signature_png_b64: b64(r.signature_png), doodle_png_b64: b64(r.doodle_png)
-  });
+function surveyFields(sr){
+  return { rev: sr.rev, updated_at: sr.updated_at, invited_at: sr.invited_at, response: sr.response, started_at: sr.started_at,
+    status: sr.status, completed_at: sr.completed_at, interrupted_at: sr.interrupted_at, end_reason: sr.end_reason || "", duration_s: sr.duration_s,
+    pain: sr.pain, novelty: sr.novelty, payment_method: sr.payment_method, payment_method_other: sr.payment_method_other,
+    shopping_preference: sr.shopping_preference, store_offerings: (sr.store_offerings||[]).join("; "),
+    store_offerings_other: sr.store_offerings_other, feedback: sr.feedback };
+}
+async function postBackup(obj){
   var ctl = window.AbortController ? new AbortController() : null, t = setTimeout(function(){ if(ctl) ctl.abort(); }, 45000);
   try{
-    var res = await fetch(CFG.backupUrl, { method:"POST", headers:{ "Content-Type":"text/plain;charset=utf-8" }, body: body, redirect:"follow", signal: ctl ? ctl.signal : undefined });
+    var res = await fetch(CFG.backupUrl, { method:"POST", headers:{ "Content-Type":"text/plain;charset=utf-8" }, body: JSON.stringify(obj), redirect:"follow", signal: ctl ? ctl.signal : undefined });
     var j = await res.json();
-    if(!j || !j.ok) throw new Error((j && j.error) || ("HTTP " + res.status));
+    if(!j || (!j.ok && !j.need_tx)) throw new Error((j && j.error) || ("HTTP " + res.status));
+    return j;
   } finally { clearTimeout(t); }
+}
+/* first upload of a receipt: transaction + images (+ the survey state if there already is one) */
+function txPayload(r, sr){
+  var o = { token: CFG.backupToken || "", kind: "tx", receipt_no: r.receipt_no, version: r.version, device: r.device,
+    date: r.date, time: r.time, timezone: r.timezone, amount: r.amount, condition: r.condition,
+    duration_s: r.duration_s, app_version: r.app_version || "",
+    signature_png_b64: b64(r.signature_png), doodle_png_b64: b64(r.doodle_png) };
+  if(sr) o.survey = surveyFields(sr);
+  return o;
+}
+/* later updates of the same receipt: survey only, no images */
+function surveyPayload(r, sr){
+  return { token: CFG.backupToken || "", kind: "survey", receipt_no: r.receipt_no, version: r.version, device: r.device,
+    app_version: r.app_version || "", survey: surveyFields(sr) };
+}
+/* record what the server confirmed; never lowers an already confirmed revision */
+function markSynced(rn, rev){
+  return new Promise(function(resolve, reject){
+    var tx = DB.transaction("sync", "readwrite"), st = tx.objectStore("sync"), g = st.get(rn);
+    g.onsuccess = function(){
+      var now = isoNow(), e = g.result || { receipt_no: rn, at: now };
+      e.tx = true; e.survey_rev = Math.max(e.survey_rev || 0, rev || 0);
+      if(rev) e.survey_at = now;
+      st.put(e);
+    };
+    tx.oncomplete = function(){ resolve(); };
+    tx.onerror = function(){ reject(tx.error); };
+    tx.onabort = function(){ reject(tx.error || new Error("transaction aborted")); };
+  });
+}
+function pendingWork(all, synced, surveys){
+  var sm = {}, svm = {};
+  synced.forEach(function(x){ sm[x.receipt_no] = x; });
+  surveys.forEach(function(x){ svm[x.receipt_no] = x; });
+  var txTodo = 0, svTodo = 0, list = [];
+  all.forEach(function(r){
+    var st = sm[r.receipt_no], sr = svm[r.receipt_no];
+    var needTx = !st, needSv = !!sr && sr.rev > ((st && st.survey_rev) || 0);
+    if(needTx) txTodo++;
+    if(needSv) svTodo++;
+    if(needTx || needSv) list.push(r);
+  });
+  return { list: list, txTodo: txTodo, svTodo: svTodo, sm: sm, svm: svm };
 }
 async function runBackup(){
   if(!backupOn() || !DB || backupBusy) return;
   if(navigator.onLine===false){ lastBackup = { at:new Date(), msg:"offline – will retry" }; return; }
   backupBusy = true;
-  var n = 0;
+  var nTx = 0, nSv = 0;
   try{
-    var all = await dbAll("tx"), synced = await dbAll("sync"), done = {};
-    synced.forEach(function(s){ done[s.receipt_no] = true; });
-    var todo = all.filter(function(r){ return !done[r.receipt_no]; });
-    for(var i=0;i<todo.length;i++){
+    var w = pendingWork(await dbAll("tx"), await dbAll("sync"), await dbAll("survey"));
+    for(var i=0;i<w.list.length;i++){
       if(saving) break;                                      /* never compete with a checkout being saved */
-      await uploadOne(todo[i]);
-      await idb("sync", "readwrite", function(s){ return s.put({ receipt_no: todo[i].receipt_no, at: new Date().toISOString() }); });
-      n++;
+      var r = w.list[i], st = w.sm[r.receipt_no];
+      var sr = await dbGet("survey", r.receipt_no);           /* newest saved survey revision, if any */
+      if(!st){
+        var j = await postBackup(txPayload(r, sr));
+        if(j.need_tx) continue;
+        /* survey answers count as backed up only if the receiver confirms a revision (an older Code.gs does not) */
+        var svOk = sr && j.survey_rev != null;
+        await markSynced(r.receipt_no, svOk ? sr.rev : 0);
+        nTx++; if(svOk) nSv++;
+      } else if(sr && sr.rev > (st.survey_rev || 0)){
+        var j2 = await postBackup(surveyPayload(r, sr));
+        if(j2.need_tx){                                       /* row not on the server (e.g. deleted by hand): send it again with images */
+          await idb("sync", "readwrite", function(x){ return x.delete(r.receipt_no); });
+          continue;
+        }
+        if(j2.survey_rev == null) throw new Error("survey answers not accepted – update Code.gs on Google Apps Script");
+        await markSynced(r.receipt_no, sr.rev);
+        nSv++;
+      }
     }
-    lastBackup = { at:new Date(), msg: todo.length ? ("uploaded " + n) : "up to date" };
+    lastBackup = { at:new Date(), msg: w.list.length ? ("uploaded " + nTx + " checkout(s), " + nSv + " survey update(s)") : "up to date" };
   }catch(e){
-    lastBackup = { at:new Date(), msg: "failed after " + n + " – will retry (" + ((e && e.message) || e) + ")" };
+    lastBackup = { at:new Date(), msg: "failed after " + nTx + " checkout(s), " + nSv + " survey update(s) – will retry (" + ((e && e.message) || e) + ")" };
   }finally{ backupBusy = false; }
 }
 window.addEventListener("online", function(){ setTimeout(runBackup, 1500); });
@@ -725,11 +1193,16 @@ function makeZip(files){
   e.setUint32(0,0x06054b50,true); e.setUint16(8,files.length,true); e.setUint16(10,files.length,true); e.setUint32(12,cdSize,true); e.setUint32(16,offset,true);
   return new Blob(parts.concat(central, [new Uint8Array(e.buffer)]), { type:"application/zip" });
 }
-var CSV_COLS = ["receipt_no","version","device","date","time","timezone","amount","condition","duration_s","signature_file","doodle_file","backed_up_to_drive"];
+/* the first 12 columns are unchanged from earlier builds; new columns are added after them */
+var CSV_COLS = ["receipt_no","version","device","date","time","timezone","amount","condition","duration_s","signature_file","doodle_file","backed_up_to_drive",
+  "build","survey_status","survey_response","survey_invited_at","survey_started_at","survey_completed_at","survey_interrupted_at","survey_end_reason","survey_duration_s",
+  "pain_of_payment","novelty","payment_method","payment_method_other","shopping_preference","store_offerings","store_offerings_other","feedback",
+  "survey_revision","survey_backed_up_to_drive"];
 function csvEsc(v){ v = v==null ? "" : String(v); return /[",\n]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v; }
 async function buildExport(){
-  var all = await dbAll("tx"), synced = await dbAll("sync"), done = {};
-  synced.forEach(function(s){ done[s.receipt_no] = true; });
+  var all = await dbAll("tx"), synced = await dbAll("sync"), surveys = await dbAll("survey"), done = {}, svm = {};
+  synced.forEach(function(s){ done[s.receipt_no] = s; });
+  surveys.forEach(function(s){ svm[s.receipt_no] = s; });
   all.sort(function(a,b){ return a.completed_at_iso < b.completed_at_iso ? -1 : 1; });
   var files = [], rows = [CSV_COLS.join(",")];
   all.forEach(function(r){
@@ -737,7 +1210,19 @@ async function buildExport(){
     files.push({ name: sf, data: new Uint8Array(r.signature_png) });
     if(df) files.push({ name: df, data: new Uint8Array(r.doodle_png) });
     var row = { receipt_no:r.receipt_no, version:r.version, device:r.device, date:r.date, time:r.time, timezone:r.timezone,
-      amount:r.amount, condition:r.condition, duration_s:r.duration_s, signature_file:sf, doodle_file:df, backed_up_to_drive: done[r.receipt_no] ? "yes" : "no" };
+      amount:r.amount, condition:r.condition, duration_s:r.duration_s, signature_file:sf, doodle_file:df, backed_up_to_drive: done[r.receipt_no] ? "yes" : "no",
+      build: r.app_version || "" };
+    var sr = svm[r.receipt_no];
+    if(!sr){ row.survey_status = "not_collected"; }      /* e.g. checkouts saved before the in-app survey existed */
+    else {
+      row.survey_status = sr.status; row.survey_response = sr.response; row.survey_invited_at = sr.invited_at;
+      row.survey_started_at = sr.started_at; row.survey_completed_at = sr.completed_at; row.survey_interrupted_at = sr.interrupted_at; row.survey_end_reason = sr.end_reason || "";
+      row.survey_duration_s = sr.duration_s; row.pain_of_payment = sr.pain; row.novelty = sr.novelty;
+      row.payment_method = sr.payment_method; row.payment_method_other = sr.payment_method_other;
+      row.shopping_preference = sr.shopping_preference; row.store_offerings = (sr.store_offerings||[]).join("; ");
+      row.store_offerings_other = sr.store_offerings_other; row.feedback = sr.feedback; row.survey_revision = sr.rev;
+      row.survey_backed_up_to_drive = (done[r.receipt_no] && (done[r.receipt_no].survey_rev||0) >= sr.rev) ? "yes" : "no";
+    }
     rows.push(CSV_COLS.map(function(c){ return csvEsc(row[c]); }).join(","));
   });
   files.unshift({ name:"transactions.csv", data: new TextEncoder().encode(rows.join("\n") + "\n") });
@@ -756,8 +1241,10 @@ function downloadBlob(blob, name){
 var prepared = null;
 function fmtTime(d){ return d ? pad2(d.getHours())+":"+pad2(d.getMinutes()) : "–"; }
 async function renderStats(){
-  var rows = [], all = [], synced = [];
-  if(DB){ try{ all = await dbAll("tx"); synced = await dbAll("sync"); }catch(e){} }
+  var rows = [], all = [], synced = [], surveys = [];
+  if(DB){ try{ all = await dbAll("tx"); synced = await dbAll("sync"); surveys = await dbAll("survey"); }catch(e){} }
+  var w = pendingWork(all, synced, surveys);
+  function cnt(st){ return surveys.filter(function(x){ return x.status===st; }).length; }
   var s = all.filter(function(r){ return r.condition==="SIGN"; }).length;
   var standalone = (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || window.navigator.standalone === true;
   var offline = !!(navigator.serviceWorker && navigator.serviceWorker.controller);
@@ -770,7 +1257,9 @@ async function renderStats(){
   row("Saved transactions", all.length + "  (" + s + " sign, " + (all.length - s) + " sign + doodle)");
   row("Last saved receipt", lastSaved || (all.length ? all.map(function(r){return r.completed_at_iso+"|"+r.receipt_no;}).sort().pop().split("|")[1] : "–"));
   if(unsavedCount) row("Not saved this session", String(unsavedCount), "bad");
-  row("Drive backup", backupOn() ? (synced.length + " of " + all.length + " uploaded") : "not configured", backupOn() ? (synced.length===all.length ? "good" : "") : "");
+  row("Surveys", cnt("completed") + " completed, " + cnt("declined") + " declined, " + cnt("interrupted") + " interrupted");
+  row("Drive backup", backupOn() ? ((all.length - w.txTodo) + " of " + all.length + " checkouts uploaded") : "not configured", backupOn() ? (w.txTodo===0 ? "good" : "") : "");
+  if(backupOn()) row("Survey updates to upload", String(w.svTodo), w.svTodo===0 ? "good" : "");
   if(backupOn()) row("Last backup attempt", lastBackup.at ? fmtTime(lastBackup.at) + " – " + lastBackup.msg : "–");
   row("Opened from Home Screen", standalone ? "yes" : "NO – use the Home Screen icon", standalone ? "good" : "bad");
   row("Works offline", offline ? "yes" : "not yet (open once online, then reopen)", offline ? "good" : "bad");
@@ -826,6 +1315,7 @@ $("delBtn").addEventListener("click", async function(){
   try{
     await idb("tx", "readwrite", function(s){ return s.clear(); });
     await idb("sync", "readwrite", function(s){ return s.clear(); });
+    await idb("survey", "readwrite", function(s){ return s.clear(); });
     lastSaved = null; unsavedCount = 0;
     $("mnote").textContent = "All transactions deleted from this tablet.";
     $("delInput").value = ""; $("dangerBox").open = false; renderStats();
@@ -839,6 +1329,7 @@ async function init(){
   try{ DB = await openDB(); }
   catch(e1){ try{ await sleep(500); DB = await openDB(); }catch(e2){ DB = null; dbError = e2; } }
   await initIds();
+  await recoverSurveys();
   if(!DB){
     var w = $("storeWarn");
     w.textContent = "This device cannot save transactions right now. Open the app from its Home Screen icon (not a private browser tab), then try again.";
